@@ -1,6 +1,8 @@
 /** Copyright (C) 2013 David Braam - Released under terms of the AGPLv3 License */
 #include "comb.h"
 
+#include "range_inset.hpp"
+
 bool Comb::preTest(Point startPoint, Point endPoint)
 {
     return collisionTest(startPoint, endPoint);
@@ -14,14 +16,14 @@ bool Comb::collisionTest(Point startPoint, Point endPoint)
     sp = matrix.apply(startPoint);
     ep = matrix.apply(endPoint);
     
-    for(unsigned int n=0; n<boundery.size(); n++)
+    for(PolygonRef r : boundery)
     {
-        if (boundery[n].size() < 1)
+        if (r.size() < 1)
             continue;
-        Point p0 = matrix.apply(boundery[n][boundery[n].size()-1]);
-        for(unsigned int i=0; i<boundery[n].size(); i++)
+        Point p0 = matrix.apply(r[r.size()-1]);
+        for(Point& p : r)
         {
-            Point p1 = matrix.apply(boundery[n][i]);
+            Point p1 = matrix.apply(p);
             if ((p0.Y > sp.Y && p1.Y < sp.Y) || (p1.Y > sp.Y && p0.Y < sp.Y))
             {
                 int64_t x = p0.X + (p1.X - p0.X) * (sp.Y - p0.Y) / (p1.Y - p0.Y);
@@ -41,10 +43,12 @@ void Comb::calcMinMax()
     {
         minX[n] = INT64_MAX;
         maxX[n] = INT64_MIN;
-        Point p0 = matrix.apply(boundery[n][boundery[n].size()-1]);
-        for(unsigned int i=0; i<boundery[n].size(); i++)
+
+        PolygonRef r = boundery[n];
+        Point p0 = matrix.apply(r[r.size()-1]);
+        for(unsigned int i=0; i<r.size(); i++)
         {
-            Point p1 = matrix.apply(boundery[n][i]);
+            Point p1 = matrix.apply(r[i]);
             if ((p0.Y > sp.Y && p1.Y < sp.Y) || (p1.Y > sp.Y && p0.Y < sp.Y))
             {
                 int64_t x = p0.X + (p1.X - p0.X) * (sp.Y - p0.Y) / (p1.Y - p0.Y);
@@ -60,6 +64,7 @@ void Comb::calcMinMax()
     }
 }
 
+// TODO: Check usage, is index required, or can the polygonref be returned?
 unsigned int Comb::getPolygonAbove(int64_t x)
 {
     int64_t min = POINT_MAX;
@@ -110,20 +115,18 @@ bool Comb::checkInside(Point p)
     //Check if we are inside the comb boundary. We do this by tracing from the point towards the negative X direction,
     //  every boundary we cross increments the crossings counter. If we have an even number of crossings then we are not inside the boundary
     int crossings = 0;
-    for(unsigned int n=0; n<boundery.size(); n++)
+    for(PolygonRef r : boundery)
     {
-        if (boundery[n].size() < 1)
+        if (r.size() < 1)
             continue;
-        Point p0 = boundery[n][boundery[n].size()-1];
-        for(unsigned int i=0; i<boundery[n].size(); i++)
+        Point p0 = r[r.size()-1];
+        for(Point& p1 : r)
         {
-            Point p1 = boundery[n][i];
-            
             if ((p0.Y >= p.Y && p1.Y < p.Y) || (p1.Y > p.Y && p0.Y <= p.Y))
             {
                 int64_t x = p0.X + (p1.X - p0.X) * (p.Y - p0.Y) / (p1.Y - p0.Y);
                 if (x >= p.X)
-                    crossings ++;
+                    crossings++;
             }
             p0 = p1;
         }
@@ -137,15 +140,13 @@ bool Comb::moveInside(Point* p, int distance)
 {
     Point ret = *p;
     int64_t bestDist = MM2INT(2.0) * MM2INT(2.0);
-    for(unsigned int n=0; n<boundery.size(); n++)
+    for(PolygonRef r : boundery)
     {
-        if (boundery[n].size() < 1)
+        if (r.size() < 1)
             continue;
-        Point p0 = boundery[n][boundery[n].size()-1];
-        for(unsigned int i=0; i<boundery[n].size(); i++)
+        Point p0 = r[r.size()-1];
+        for(Point& p1 : r)
         {
-            Point p1 = boundery[n][i];
-            
             //Q = A + Normal( B - A ) * ((( B - A ) dot ( P - A )) / VSize( A - B ));
             Point pDiff = p1 - p0;
             int64_t lineLength = vSize(pDiff);
@@ -245,15 +246,17 @@ bool Comb::calc(Point startPoint, Point endPoint, vector<Point>& combPoints)
     
     //Optimize the pointList, skip each point we could already reach by not crossing a boundary. This smooths out the path and makes it skip any unneeded corners.
     Point p0 = startPoint;
-    for(unsigned int n=1; n<pointList.size(); n++)
+    Point prev = startPoint;
+    for(Point& p : make_range_inset(pointList,1))
     {
-        if (collisionTest(p0, pointList[n]))
+        if (collisionTest(p0, p))
         {
-            if (collisionTest(p0, pointList[n-1]))
+            if (collisionTest(p0, prev))
                 return false;
-            p0 = pointList[n-1];
+            p0 = prev;
             combPoints.push_back(p0);
         }
+        prev = p;
     }
     if (addEndpoint)
         combPoints.push_back(endPoint);

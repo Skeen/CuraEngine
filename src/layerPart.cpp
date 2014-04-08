@@ -21,10 +21,10 @@ void createLayerWithParts(SliceLayer& storageLayer, SlicerLayer* layer, int unio
 {
     if (unionAllType & FIX_HORRIBLE_UNION_ALL_TYPE_B)
     {
-        for(unsigned int i=0; i<layer->polygonList.size(); i++)
+        for(PolygonRef r : layer->polygonList)
         {
-            if (layer->polygonList[i].orientation())
-                layer->polygonList[i].reverse();
+            if (r.orientation())
+                r.reverse();
         }
     }
     
@@ -64,22 +64,26 @@ void dumpLayerparts(SliceDataStorage& storage, const char* filename)
     Point3 modelSize = storage.modelSize;
     Point3 modelMin = storage.modelMin;
     
-    for(unsigned int volumeIdx=0; volumeIdx<storage.volumes.size(); volumeIdx++)
+    for(SliceVolumeStorage& svs : storage.volumes)
     {
-        for(unsigned int layerNr=0;layerNr<storage.volumes[volumeIdx].layers.size(); layerNr++)
+        for(SliceLayer& layer : svs.layers)
         {
             fprintf(out, "<svg xmlns=\"http://www.w3.org/2000/svg\" version=\"1.1\" style=\"width: 500px; height:500px\">\n");
-            SliceLayer* layer = &storage.volumes[volumeIdx].layers[layerNr];
-            for(unsigned int i=0;i<layer->parts.size();i++)
+            for(SliceLayerPart& part : layer.parts)
             {
-                SliceLayerPart* part = &layer->parts[i];
-                for(unsigned int j=0;j<part->outline.size();j++)
+                bool first = true;
+                for(PolygonRef ref : part.outline)
                 {
                     fprintf(out, "<polygon points=\"");
-                    for(unsigned int k=0;k<part->outline[j].size();k++)
-                        fprintf(out, "%f,%f ", float(part->outline[j][k].X - modelMin.x)/modelSize.x*500, float(part->outline[j][k].Y - modelMin.y)/modelSize.y*500);
-                    if (j == 0)
+                    for(Point& p : ref)
+                    {
+                        fprintf(out, "%f,%f ", float(p.X - modelMin.x)/modelSize.x*500, float(p.Y - modelMin.y)/modelSize.y*500);
+                    }
+                    if (first)
+                    {
                         fprintf(out, "\" style=\"fill:gray; stroke:black;stroke-width:1\" />\n");
+                        first++;
+                    }
                     else
                         fprintf(out, "\" style=\"fill:red; stroke:black;stroke-width:1\" />\n");
                 }

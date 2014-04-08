@@ -188,13 +188,13 @@ double TimeEstimateCalculator::calculate()
     recalculate_trapezoids();
     
     double totalTime = 0;
-    for(unsigned int n=0; n<blocks.size(); n++)
+    for(Block& b : blocks)
     {
-        double plateau_distance = blocks[n].decelerate_after - blocks[n].accelerate_until;
+        double plateau_distance = b.decelerate_after - b.accelerate_until;
         
-        totalTime += acceleration_time_from_distance(blocks[n].initial_feedrate, blocks[n].accelerate_until, blocks[n].acceleration);
-        totalTime += plateau_distance / blocks[n].nominal_feedrate;
-        totalTime += acceleration_time_from_distance(blocks[n].final_feedrate, (blocks[n].distance - blocks[n].decelerate_after), blocks[n].acceleration);
+        totalTime += acceleration_time_from_distance(b.initial_feedrate, b.accelerate_until, b.acceleration);
+        totalTime += plateau_distance / b.nominal_feedrate;
+        totalTime += acceleration_time_from_distance(b.final_feedrate, (b.distance - b.decelerate_after), b.acceleration);
     }
     return totalTime;
 }
@@ -263,11 +263,11 @@ void TimeEstimateCalculator::planner_forward_pass_kernel(Block *previous, Block 
 void TimeEstimateCalculator::forward_pass()
 {
     Block* block[3] = {NULL, NULL, NULL};
-    for(unsigned int n=0; n<blocks.size(); n++)
+    for(Block& b : blocks)
     {
         block[0]= block[1];
         block[1]= block[2];
-        block[2] = &blocks[n];
+        block[2] = &b;
         planner_forward_pass_kernel(block[0], block[1], block[2]);
     }
     planner_forward_pass_kernel(block[1], block[2], NULL);

@@ -14,14 +14,12 @@ OptimizedVolume::OptimizedVolume(SimpleVolume* volume, OptimizedModel* model)
 
     std::map<uint32_t, std::vector<uint32_t> > indexMap;
     
-    double t = getTime();
-    for(uint32_t i=0; i<volume->faces.size(); i++)
+    for(SimpleFace& face : volume->faces)
     {
         OptimizedFace f;
-        if((i%1000==0) && (getTime()-t)>2.0) cura::logProgress("optimized", i + 1, volume->faces.size());
         for(uint32_t j=0; j<3; j++)
         {
-            Point3 p = volume->faces[i].v[j];
+            Point3 p = face.v[j];
             int hash = ((p.x + MELD_DIST/2) / MELD_DIST) ^ (((p.y + MELD_DIST/2) / MELD_DIST) << 10) ^ (((p.z + MELD_DIST/2) / MELD_DIST) << 20);
             uint32_t idx;
             bool add = true;
@@ -59,9 +57,8 @@ OptimizedVolume::OptimizedVolume(SimpleVolume* volume, OptimizedModel* model)
             }
             if (!duplicate)
             {
-                points[f.index[0]].faceIndexList.push_back(faces.size());
-                points[f.index[1]].faceIndexList.push_back(faces.size());
-                points[f.index[2]].faceIndexList.push_back(faces.size());
+                for(int x=0; x<3; x++)
+                    points[f.index[x]].faceIndexList.push_back(faces.size());
                 faces.push_back(f);
             }
         }
@@ -69,18 +66,17 @@ OptimizedVolume::OptimizedVolume(SimpleVolume* volume, OptimizedModel* model)
     //fprintf(stdout, "\rAll faces are optimized in %5.1fs.\n",timeElapsed(t));
 
     int openFacesCount = 0;
-    for(unsigned int i=0;i<faces.size();i++)
+    int i = 0;
+    for(OptimizedFace& f : faces)
     {
-        OptimizedFace* f = &faces[i];
-        f->touching[0] = getFaceIdxWithPoints(f->index[0], f->index[1], i);
-        f->touching[1] = getFaceIdxWithPoints(f->index[1], f->index[2], i);
-        f->touching[2] = getFaceIdxWithPoints(f->index[2], f->index[0], i);
-        if (f->touching[0] == -1)
-            openFacesCount++;
-        if (f->touching[1] == -1)
-            openFacesCount++;
-        if (f->touching[2] == -1)
-            openFacesCount++;
+        f.touching[0] = getFaceIdxWithPoints(f.index[0], f.index[1], i);
+        f.touching[1] = getFaceIdxWithPoints(f.index[1], f.index[2], i);
+        f.touching[2] = getFaceIdxWithPoints(f.index[2], f.index[0], i);
+        for(int x=0; x<3; x++)
+            if (f.touching[x] == -1)
+                openFacesCount++;
+
+        i++;
     }
     //fprintf(stdout, "  Number of open faces: %i\n", openFacesCount);
 }
@@ -97,7 +93,7 @@ void OptimizedModel::saveDebugSTL(const char* filename)
     fwrite(buffer, 80, 1, f);
     n = vol->faces.size();
     fwrite(&n, sizeof(n), 1, f);
-    for(unsigned int i=0;i<vol->faces.size();i++)
+    for(OptimizedFace& face : vol->faces)
     {
         flt = 0;
         s = 0;
@@ -105,15 +101,13 @@ void OptimizedModel::saveDebugSTL(const char* filename)
         fwrite(&flt, sizeof(flt), 1, f);
         fwrite(&flt, sizeof(flt), 1, f);
 
-        flt = INT2MM(vol->points[vol->faces[i].index[0]].p.x); fwrite(&flt, sizeof(flt), 1, f);
-        flt = INT2MM(vol->points[vol->faces[i].index[0]].p.y); fwrite(&flt, sizeof(flt), 1, f);
-        flt = INT2MM(vol->points[vol->faces[i].index[0]].p.z); fwrite(&flt, sizeof(flt), 1, f);
-        flt = INT2MM(vol->points[vol->faces[i].index[1]].p.x); fwrite(&flt, sizeof(flt), 1, f);
-        flt = INT2MM(vol->points[vol->faces[i].index[1]].p.y); fwrite(&flt, sizeof(flt), 1, f);
-        flt = INT2MM(vol->points[vol->faces[i].index[1]].p.z); fwrite(&flt, sizeof(flt), 1, f);
-        flt = INT2MM(vol->points[vol->faces[i].index[2]].p.x); fwrite(&flt, sizeof(flt), 1, f);
-        flt = INT2MM(vol->points[vol->faces[i].index[2]].p.y); fwrite(&flt, sizeof(flt), 1, f);
-        flt = INT2MM(vol->points[vol->faces[i].index[2]].p.z); fwrite(&flt, sizeof(flt), 1, f);
+        for(int x=0; x<3; x++)
+        {
+            auto& point = vol->points[face.index[x]];
+            flt = INT2MM(point.p.x); fwrite(&flt, sizeof(flt), 1, f);
+            flt = INT2MM(point.p.y); fwrite(&flt, sizeof(flt), 1, f);
+            flt = INT2MM(point.p.z); fwrite(&flt, sizeof(flt), 1, f);
+        }
 
         fwrite(&s, sizeof(s), 1, f);
     }

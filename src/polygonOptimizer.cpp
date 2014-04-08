@@ -1,9 +1,12 @@
 /** Copyright (C) 2013 David Braam - Released under terms of the AGPLv3 License */
 #include "polygonOptimizer.h"
 
+#include <algorithm>
+
 void optimizePolygon(PolygonRef poly)
 {
     Point p0 = poly[poly.size()-1];
+    // TODO: Foreach loop
     for(unsigned int i=0;i<poly.size();i++)
     {
         Point p1 = poly[i];
@@ -38,13 +41,15 @@ void optimizePolygon(PolygonRef poly)
 
 void optimizePolygons(Polygons& polys)
 {
-    for(unsigned int n=0;n<polys.size();n++)
+    // Optimize all polygons
+    for(PolygonRef r : polys)
     {
-        optimizePolygon(polys[n]);
-        if (polys[n].size() < 3)
-        {
-            polys.remove(n);
-            n--;
-        }
+        optimizePolygon(r);
     }
+    // Remove all the ones below 3 in size
+    polys.erase(std::remove_if(polys.begin(), polys.end(),
+            [](PolygonRef r)
+            {
+                return (r.size() < 3);
+            }), polys.end());
 }

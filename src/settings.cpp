@@ -122,11 +122,11 @@ ConfigSettings::ConfigSettings()
 
 bool ConfigSettings::setSetting(const char* key, const char* value)
 {
-    for(unsigned int n=0; n < _index.size(); n++)
+    for(auto& config : _index)
     {
-        if (stringcasecompare(key, _index[n].key) == 0)
+        if (stringcasecompare(key, config.key) == 0)
         {
-            *_index[n].ptr = atoi(value);
+            *config.ptr = atoi(value);
             return true;
         }
     }

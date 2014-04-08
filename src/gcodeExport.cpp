@@ -438,9 +438,9 @@ void GCodePlanner::addTravel(Point p)
         vector<Point> pointList;
         if (comb->calc(lastPosition, p, pointList))
         {
-            for(unsigned int n=0; n<pointList.size(); n++)
+            for(Point& p : pointList)
             {
-                path->points.push_back(pointList[n]);
+                path->points.push_back(p);
             }
         }else{
             if (!shorterThen(lastPosition - p, retractionMinimalDistance))
@@ -482,6 +482,7 @@ void GCodePlanner::addPolygon(PolygonRef polygon, int startIdx, GCodePathConfig*
 {
     Point p0 = polygon[startIdx];
     addTravel(p0);
+    // TODO: Foreach loop
     for(unsigned int i=1; i<polygon.size(); i++)
     {
         Point p1 = polygon[(startIdx + i) % polygon.size()];
@@ -495,12 +496,13 @@ void GCodePlanner::addPolygon(PolygonRef polygon, int startIdx, GCodePathConfig*
 void GCodePlanner::addPolygonsByOptimizer(Polygons& polygons, GCodePathConfig* config)
 {
     PathOrderOptimizer orderOptimizer(lastPosition);
-    for(unsigned int i=0;i<polygons.size();i++)
-        orderOptimizer.addPolygon(polygons[i]);
-    orderOptimizer.optimize();
-    for(unsigned int i=0;i<orderOptimizer.polyOrder.size();i++)
+    for(PolygonRef r : polygons)
     {
-        int nr = orderOptimizer.polyOrder[i];
+        orderOptimizer.addPolygon(r);
+    }
+    orderOptimizer.optimize();
+    for(int nr : orderOptimizer.polyOrder)
+    {
         addPolygon(polygons[nr], orderOptimizer.polyStart[nr], config);
     }
 }
@@ -510,17 +512,13 @@ void GCodePlanner::forceMinimalLayerTime(double minTime, int minimalSpeed)
     Point p0 = gcode.getPositionXY();
     double travelTime = 0.0;
     double extrudeTime = 0.0;
-    for(unsigned int n=0; n<paths.size(); n++)
+    for(GCodePath& path : paths)
     {
-        GCodePath* path = &paths[n];
-        for(unsigned int i=0; i<path->points.size(); i++)
+        for(Point& p : path.points)
         {
-            double thisTime = vSizeMM(p0 - path->points[i]) / double(path->config->speed);
-            if (path->config->lineWidth != 0)
-                extrudeTime += thisTime;
-            else
-                travelTime += thisTime;
-            p0 = path->points[i];
+            double thisTime = vSizeMM(p0 - p) / double(path.config->speed);
+            ((path.config->lineWidth != 0) ? extrudeTime : travelTime) += thisTime;
+            p0 = p;
         }
     }
     double totalTime = extrudeTime + travelTime;
@@ -530,14 +528,13 @@ void GCodePlanner::forceMinimalLayerTime(double minTime, int minimalSpeed)
         if (minExtrudeTime < 1)
             minExtrudeTime = 1;
         double factor = extrudeTime / minExtrudeTime;
-        for(unsigned int n=0; n<paths.size(); n++)
+        for(GCodePath& path : paths)
         {
-            GCodePath* path = &paths[n];
-            if (path->config->lineWidth == 0)
+            if (path.config->lineWidth == 0)
                 continue;
-            int speed = path->config->speed * factor;
+            int speed = path.config->speed * factor;
             if (speed < minimalSpeed)
-                factor = double(minimalSpeed) / double(path->config->speed);
+                factor = double(minimalSpeed) / double(path.config->speed);
         }
         
         //Only slow down with the minimal time if that will be slower then a factor already set. First layer slowdown also sets the speed factor.
@@ -562,6 +559,7 @@ void GCodePlanner::writeGCode(bool liftHeadIfNeeded, int layerThickness)
     GCodePathConfig* lastConfig = NULL;
     int extruder = gcode.getExtruderNr();
 
+    // TODO: Foreach loop
     for(unsigned int n=0; n<paths.size(); n++)
     {
         GCodePath* path = &paths[n];
@@ -593,7 +591,7 @@ void GCodePlanner::writeGCode(bool liftHeadIfNeeded, int layerThickness)
             while(i < paths.size() && paths[i].points.size() == 1 && shorterThen(p0 - paths[i].points[0], path->config->lineWidth * 2))
             {
                 p0 = paths[i].points[0];
-                i ++;
+                i++;
             }
             if (paths[i-1].config == &travelConfig)
                 i --;
@@ -632,27 +630,25 @@ void GCodePlanner::writeGCode(bool liftHeadIfNeeded, int layerThickness)
             float totalLength = 0.0;
             int z = gcode.getPositionZ();
             Point p0 = gcode.getPositionXY();
-            for(unsigned int i=0; i<path->points.size(); i++)
+            for(Point& p1 : path->points)
             {
-                Point p1 = path->points[i];
                 totalLength += vSizeMM(p0 - p1);
                 p0 = p1;
             }
             
             float length = 0.0;
             p0 = gcode.getPositionXY();
-            for(unsigned int i=0; i<path->points.size(); i++)
+            for(Point& p1 : path->points)
             {
-                Point p1 = path->points[i];
                 length += vSizeMM(p0 - p1);
                 p0 = p1;
                 gcode.setZ(z + layerThickness * length / totalLength);
-                gcode.writeMove(path->points[i], speed, path->config->lineWidth);
+                gcode.writeMove(p1, speed, path->config->lineWidth);
             }
         }else{
-            for(unsigned int i=0; i<path->points.size(); i++)
+            for(Point& p : path->points)
             {
-                gcode.writeMove(path->points[i], speed, path->config->lineWidth);
+                gcode.writeMove(p, speed, path->config->lineWidth);
             }
         }
     }

@@ -5,15 +5,15 @@
 void generateSkirt(SliceDataStorage& storage, int distance, int extrusionWidth, int count, int minLength, int initialLayerHeight)
 {
     bool externalOnly = (distance > 0);
-    for(int skirtNr=0; skirtNr<count;skirtNr++)
+    for(int skirtNr=0; skirtNr<count; skirtNr++)
     {
         int offsetDistance = distance + extrusionWidth * skirtNr + extrusionWidth / 2;
         
         Polygons skirtPolygons(storage.wipeTower.offset(offsetDistance));
-        for(unsigned int volumeIdx = 0; volumeIdx < storage.volumes.size(); volumeIdx++)
+        for(SliceVolumeStorage& svs : storage.volumes)
         {
-            if (storage.volumes[volumeIdx].layers.size() < 1) continue;
-            SliceLayer* layer = &storage.volumes[volumeIdx].layers[0];
+            if (svs.layers.size() < 1) continue;
+            SliceLayer* layer = &svs.layers[0];
             for(unsigned int i=0; i<layer->parts.size(); i++)
             {
                 if (externalOnly)

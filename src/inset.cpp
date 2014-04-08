@@ -2,6 +2,8 @@
 #include "inset.h"
 #include "polygonOptimizer.h"
 
+#include <algorithm>
+
 void generateInsets(SliceLayerPart* part, int offset, int insetCount)
 {
     part->combBoundery = part->outline.offset(-offset);
@@ -26,20 +28,17 @@ void generateInsets(SliceLayerPart* part, int offset, int insetCount)
 
 void generateInsets(SliceLayer* layer, int offset, int insetCount)
 {
-    for(unsigned int partNr = 0; partNr < layer->parts.size(); partNr++)
+    for(SliceLayerPart& part : layer->parts)
     {
-        generateInsets(&layer->parts[partNr], offset, insetCount);
+        generateInsets(&part, offset, insetCount);
     }
     
     //Remove the parts which did not generate an inset. As these parts are too small to print,
     // and later code can now assume that there is always minimal 1 inset line.
-    for(unsigned int partNr = 0; partNr < layer->parts.size(); partNr++)
-    {
-        if (layer->parts[partNr].insets.size() < 1)
-        {
-            layer->parts.erase(layer->parts.begin() + partNr);
-            partNr -= 1;
-        }
-    }
+    layer->parts.erase(std::remove_if(layer->parts.begin(), layer->parts.end(),
+                [](const SliceLayerPart& part)
+                {
+                return (part.insets.size() < 1);
+                }), layer->parts.end());
 }
 

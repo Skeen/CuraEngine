@@ -1,17 +1,7 @@
 /** Copyright (C) 2013 David Braam - Released under terms of the AGPLv3 License */
 #include "support.h"
 
-template<typename T> inline void swap(T& p0, T& p1)
-{
-    T tmp = p0;
-    p0 = p1;
-    p1 = tmp;
-}
-
-int cmp_SupportPoint(const void* a, const void* b)
-{
-    return ((SupportPoint*)a)->z - ((SupportPoint*)b)->z;
-}
+#include <algorithm>
 
 void generateSupportGrid(SupportStorage& storage, OptimizedModel* om, int supportAngle, bool supportEverywhere, int supportXYDistance, int supportZDistance)
 {
@@ -31,15 +21,13 @@ void generateSupportGrid(SupportStorage& storage, OptimizedModel* om, int suppor
     storage.XYDistance = supportXYDistance;
     storage.ZDistance = supportZDistance;
 
-    for(unsigned int volumeIdx = 0; volumeIdx < om->volumes.size(); volumeIdx++)
+    for(OptimizedVolume& vol : om->volumes)
     {
-        OptimizedVolume* vol = &om->volumes[volumeIdx];
-        for(unsigned int faceIdx = 0; faceIdx < vol->faces.size(); faceIdx++)
+        for(OptimizedFace& face :  vol.faces)
         {
-            OptimizedFace* face = &vol->faces[faceIdx];
-            Point3 v0 = vol->points[face->index[0]].p;
-            Point3 v1 = vol->points[face->index[1]].p;
-            Point3 v2 = vol->points[face->index[2]].p;
+            Point3 v0 = vol.points[face.index[0]].p;
+            Point3 v1 = vol.points[face.index[1]].p;
+            Point3 v2 = vol.points[face.index[2]].p;
             
             Point3 normal = (v1 - v0).cross(v2 - v0);
             int32_t normalSize = normal.vSize();
@@ -53,9 +41,9 @@ void generateSupportGrid(SupportStorage& storage, OptimizedModel* om, int suppor
             v2.x = (v2.x - storage.gridOffset.X) / storage.gridScale;
             v2.y = (v2.y - storage.gridOffset.Y) / storage.gridScale;
 
-            if (v0.x > v1.x) swap(v0, v1);
-            if (v1.x > v2.x) swap(v1, v2);
-            if (v0.x > v1.x) swap(v0, v1);
+            if (v0.x > v1.x) std::swap(v0, v1);
+            if (v1.x > v2.x) std::swap(v1, v2);
+            if (v0.x > v1.x) std::swap(v0, v1);
             for(int64_t x=v0.x; x<v1.x; x++)
             {
                 int64_t y0 = v0.y + (v1.y - v0.y) * (x - v0.x) / (v1.x - v0.x);
@@ -63,7 +51,7 @@ void generateSupportGrid(SupportStorage& storage, OptimizedModel* om, int suppor
                 int64_t z0 = v0.z + (v1.z - v0.z) * (x - v0.x) / (v1.x - v0.x);
                 int64_t z1 = v0.z + (v2.z - v0.z) * (x - v0.x) / (v2.x - v0.x);
 
-                if (y0 > y1) { swap(y0, y1); swap(z0, z1); }
+                if (y0 > y1) { std::swap(y0, y1); std::swap(z0, z1); }
                 for(int64_t y=y0; y<y1; y++)
                     storage.grid[x+y*storage.gridWidth].push_back(SupportPoint(z0 + (z1 - z0) * (y-y0) / (y1-y0), cosAngle));
             }
@@ -74,7 +62,7 @@ void generateSupportGrid(SupportStorage& storage, OptimizedModel* om, int suppor
                 int64_t z0 = v1.z + (v2.z - v1.z) * (x - v1.x) / (v2.x - v1.x);
                 int64_t z1 = v0.z + (v2.z - v0.z) * (x - v0.x) / (v2.x - v0.x);
 
-                if (y0 > y1) { swap(y0, y1); swap(z0, z1); }
+                if (y0 > y1) { std::swap(y0, y1); std::swap(z0, z1); }
                 for(int64_t y=y0; y<y1; y++)
                     storage.grid[x+y*storage.gridWidth].push_back(SupportPoint(z0 + (z1 - z0) * (y-y0) / (y1-y0), cosAngle));
             }
@@ -86,7 +74,9 @@ void generateSupportGrid(SupportStorage& storage, OptimizedModel* om, int suppor
         for(int32_t y=0; y<storage.gridHeight; y++)
         {
             unsigned int n = x+y*storage.gridWidth;
-            qsort(storage.grid[n].data(), storage.grid[n].size(), sizeof(SupportPoint), cmp_SupportPoint);
+            std::sort(storage.grid[n].begin(), storage.grid[n].end(),
+                      [](const SupportPoint& a, const SupportPoint& b)
+                        { return a.z - b.z; });
         }
     }
     storage.gridOffset.X += storage.gridScale / 2;
@@ -136,7 +126,7 @@ void SupportPolyGenerator::lazyFill(Point startPoint)
         done[p.X + p.Y * storage.gridWidth] = nr;
         while(needSupportAt(p + Point(1, 0)))
         {
-            p.X ++;
+            p.X++;
             done[p.X + p.Y * storage.gridWidth] = nr;
         }
         tmpPoly.add(startPoint * storage.gridScale + storage.gridOffset - Point(storage.gridScale/2, 0));
@@ -146,6 +136,8 @@ void SupportPolyGenerator::lazyFill(Point startPoint)
             startPoint.X ++;
         if (startPoint.X > p.X)
         {
+            // TODO: Reverse Iterator aka.;
+            // for(auto& elem : boost::adapter::reverse(tmpPoly))
             for(unsigned int n=0;n<tmpPoly.size();n++)
             {
                 poly.add(tmpPoly[tmpPoly.size()-n-1]);

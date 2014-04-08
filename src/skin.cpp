@@ -1,6 +1,8 @@
 /** Copyright (C) 2013 David Braam - Released under terms of the AGPLv3 License */
 #include "skin.h"
 
+#include <algorithm>
+
 void generateSkins(int layerNr, SliceVolumeStorage& storage, int extrusionWidth, int downSkinCount, int upSkinCount, int infillOverlap)
 {
     SliceLayer* layer = &storage.layers[layerNr];
@@ -41,15 +43,13 @@ void generateSkins(int layerNr, SliceVolumeStorage& storage, int extrusionWidth,
         part->skinOutline = upskin.unionPolygons(downskin);
 
         double minAreaSize = (2 * M_PI * INT2MM(extrusionWidth) * INT2MM(extrusionWidth)) * 0.3;
-        for(unsigned int i=0; i<part->skinOutline.size(); i++)
-        {
-            double area = INT2MM(INT2MM(fabs(part->skinOutline[i].area())));
-            if (area < minAreaSize) // Only create an up/down skin if the area is large enough. So you do not create tiny blobs of "trying to fill"
-            {
-                part->skinOutline.remove(i);
-                i -= 1;
-            }
-        }
+        part->skinOutline.erase(std::remove_if(part->skinOutline.begin(), part->skinOutline.end(),
+                [minAreaSize](PolygonRef r)
+                {
+                    // Only create an up/down skin if the area is large enough. So you do not create tiny blobs of "trying to fill"
+                    double area = INT2MM(INT2MM(fabs(r.area())));
+                    return (area < minAreaSize);
+                }), part->skinOutline.end());
     }
 }
 
@@ -101,16 +101,14 @@ void generateSparse(int layerNr, SliceVolumeStorage& storage, int extrusionWidth
         Polygons result = upskin.unionPolygons(downskin);
 
         double minAreaSize = 3.0;//(2 * M_PI * INT2MM(config.extrusionWidth) * INT2MM(config.extrusionWidth)) * 3;
-        for(unsigned int i=0; i<result.size(); i++)
-        {
-            double area = INT2MM(INT2MM(fabs(result[i].area())));
-            if (area < minAreaSize) /* Only create an up/down skin if the area is large enough. So you do not create tiny blobs of "trying to fill" */
-            {
-                result.remove(i);
-                i -= 1;
-            }
-        }
-        
+        result.erase(std::remove_if(result.begin(), result.end(),
+                [minAreaSize](PolygonRef r)
+                {
+                    // Only create an up/down skin if the area is large enough. So you do not create tiny blobs of "trying to fill"
+                    double area = INT2MM(INT2MM(fabs(r.area())));
+                    return (area < minAreaSize);
+                }), result.end());
+
         part->sparseOutline = sparse.difference(result);
     }
 }
