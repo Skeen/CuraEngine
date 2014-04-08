@@ -50,9 +50,7 @@ void generateLineInfill(const Polygons& in_outline, Polygons& result, int extrus
             for (int idx = idxMin; idx <= idxMax; idx++)
             {
                 int x = (idx * lineSpacing) + boundary.min.X + lineSpacing / 2;
-                if (x < xMin)
-                    continue;
-                if (x >= xMax)
+                if ((x < xMin) || (x >= xMax))
                     continue;
                 int y = p0.Y + (p1.Y - p0.Y) * (x - p0.X) / (p1.X - p0.X);
                 cutList[idx].push_back(y);
