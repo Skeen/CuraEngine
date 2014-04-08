@@ -149,7 +149,7 @@ public:
     int sparseInfillLineDistance = 100 * extrusionWidth / 20;
     int infillOverlap           = 15;
     int infillSpeed             = 50;
-    int infillPattern           = INFILL_AUTOMATIC;
+    int infillPattern           = INFILL_CONCENTRIC;
 
     //Support material
     int supportType             = SUPPORT_TYPE_GRID;

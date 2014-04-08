@@ -768,7 +768,7 @@ void fffProcessor::addVolumeLayerToGCode(SliceDataStorage& storage,
                     
                 case INFILL_CONCENTRIC:
                     generateConcentricInfill(part->sparseOutline, fillPolygons,
-                            config.sparseInfillLineDistance, 3);
+                            config.sparseInfillLineDistance);
                     break;
             }
         }
