@@ -37,6 +37,17 @@ enum Support_Type
     SUPPORT_TYPE_LINES = 1
 };
 
+/**
+ * Type of infill pattern.
+ */
+enum Infill_Pattern
+{
+    INFILL_AUTOMATIC = 0,
+    INFILL_GRID = 1,
+    INFILL_LINES = 2,
+    INFILL_CONCENTRIC = 3
+};
+
 // TODO: Use strongly typed enum
 enum GCode_Flavor
 {
@@ -108,8 +119,6 @@ public:
     int insetCount              = 2;
     int downSkinCount           = 6;
     int upSkinCount             = 6;
-    int sparseInfillLineDistance = 100 * extrusionWidth / 20;
-    int infillOverlap           = 15;
     int skirtDistance           = 6000;
     int skirtLineCount          = 1;
     int skirtMinLength          = 0;
@@ -131,11 +140,16 @@ public:
     int initialSpeedupLayers    = 4;
     int initialLayerSpeed       = 20;
     int printSpeed              = 50;
-    int infillSpeed             = 50;
     int inset0Speed             = 50;
     int insetXSpeed             = 50;
     int moveSpeed               = 150;
     int fanFullOnLayerNr        = 2;
+
+    // Infill settings
+    int sparseInfillLineDistance = 100 * extrusionWidth / 20;
+    int infillOverlap           = 15;
+    int infillSpeed             = 50;
+    int infillPattern           = INFILL_AUTOMATIC;
 
     //Support material
     int supportType             = SUPPORT_TYPE_GRID;

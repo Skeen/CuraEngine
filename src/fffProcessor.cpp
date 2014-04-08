@@ -743,23 +743,33 @@ void fffProcessor::addVolumeLayerToGCode(SliceDataStorage& storage,
                                                     : fillAngle);
         if (config.sparseInfillLineDistance > 0)
         {
-            if (config.sparseInfillLineDistance > extrusionWidth * 4)
+            switch(config.infillPattern)
             {
-                generateLineInfill(part->sparseOutline, fillPolygons,
-                                   extrusionWidth,
-                                   config.sparseInfillLineDistance * 2,
-                                   config.infillOverlap, 45);
-                generateLineInfill(part->sparseOutline, fillPolygons,
-                                   extrusionWidth,
-                                   config.sparseInfillLineDistance * 2,
-                                   config.infillOverlap, 45 + 90);
-            }
-            else
-            {
-                generateLineInfill(part->sparseOutline, fillPolygons,
-                                   extrusionWidth,
-                                   config.sparseInfillLineDistance,
-                                   config.infillOverlap, fillAngle);
+                case INFILL_AUTOMATIC:
+                    generateAutomaticInfill(part->sparseOutline, fillPolygons,
+                                            extrusionWidth,
+                                            config.sparseInfillLineDistance,
+                                            config.infillOverlap, fillAngle);
+                    break;
+
+                case INFILL_GRID:
+                    generateGridInfill(part->sparseOutline, fillPolygons,
+                                       extrusionWidth,
+                                       config.sparseInfillLineDistance,
+                                       config.infillOverlap, fillAngle);
+                    break;
+                    
+                case INFILL_LINES:
+                    generateLineInfill(part->sparseOutline, fillPolygons,
+                                       extrusionWidth,
+                                       config.sparseInfillLineDistance,
+                                       config.infillOverlap, fillAngle);
+                    break;
+                    
+                case INFILL_CONCENTRIC:
+                    generateConcentricInfill(part->sparseOutline, fillPolygons,
+                            config.sparseInfillLineDistance, 3);
+                    break;
             }
         }
 

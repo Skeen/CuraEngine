@@ -25,8 +25,6 @@ ConfigSettings::ConfigSettings()
     SETTING(insetCount);
     SETTING(downSkinCount);
     SETTING(upSkinCount);
-    SETTING(sparseInfillLineDistance);
-    SETTING(infillOverlap);
     SETTING(skirtDistance);
     SETTING(skirtLineCount);
     SETTING(skirtMinLength);
@@ -47,11 +45,15 @@ ConfigSettings::ConfigSettings()
     SETTING(initialSpeedupLayers);
     SETTING(initialLayerSpeed);
     SETTING(printSpeed);
-    SETTING(infillSpeed);
     SETTING(inset0Speed);
     SETTING(insetXSpeed);
     SETTING(moveSpeed);
     SETTING(fanFullOnLayerNr);
+
+    SETTING(sparseInfillLineDistance);
+    SETTING(infillOverlap);
+    SETTING(infillSpeed);
+    SETTING(infillPattern);
 
     SETTING(supportType);
     SETTING(supportAngle);

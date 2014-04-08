@@ -4,7 +4,9 @@
 
 #include "utils/polygon.h"
 
-void generateConcentricInfill(Polygons outline, Polygons& result, int offsets[], int offsetsSize);
+void generateConcentricInfill(Polygons outline, Polygons& result, int inset_value, int inset_count);
+void generateAutomaticInfill(const Polygons& in_outline, Polygons& result, int extrusionWidth, int lineSpacing, int infillOverlap, double rotation);
+void generateGridInfill(const Polygons& in_outline, Polygons& result, int extrusionWidth, int lineSpacing, int infillOverlap, double rotation);
 void generateLineInfill(const Polygons& in_outline, Polygons& result, int extrusionWidth, int lineSpacing, int infillOverlap, double rotation);
 
 #endif//INFILL_H
