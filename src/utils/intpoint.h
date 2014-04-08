@@ -81,7 +81,7 @@ public:
 };
 
 /* 64bit Points are used mostly troughout the code, these are the 2D points from ClipperLib */
-typedef ClipperLib::IntPoint Point;
+using Point = ClipperLib::IntPoint;
 class IntPoint {
 public:
     int X, Y;

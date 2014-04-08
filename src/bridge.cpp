@@ -21,11 +21,11 @@ int bridgeAngle(SliceLayerPart* part, SliceLayer* prevLayer)
         return -1;
 
     //Skip internal holes
-    islands.erase(std::remove_if(islands.begin(), islands.end(),
+    islands.erase(std::remove_if(std::begin(islands), std::end(islands),
                 [](PolygonRef r)
                 {
                     return !r.orientation();
-                }), islands.end());
+                }), std::end(islands));
 
     // We need at least 2 islands to be existant at this point
     if (islands.size() < 2)
@@ -37,12 +37,12 @@ int bridgeAngle(SliceLayerPart* part, SliceLayer* prevLayer)
 
     // Next find the 2 largest islands that we rest on.
     // Find the first one
-    auto iter = std::max_element(islands.begin(), islands.end(), area_cmp);
+    auto iter = std::max_element(std::begin(islands), std::end(islands), area_cmp);
     PolygonRef idx1 = *iter;
     // Remove that from the list
     islands.erase(iter);
     // Find the second one
-    iter = std::max_element(islands.begin(), islands.end(), area_cmp);
+    iter = std::max_element(std::begin(islands), std::end(islands), area_cmp);
     PolygonRef idx2 = *iter;
 
     Point center1 = idx1.centerOfMass();

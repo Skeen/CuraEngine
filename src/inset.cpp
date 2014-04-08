@@ -35,7 +35,7 @@ void generateInsets(SliceLayer* layer, int offset, int insetCount)
     
     //Remove the parts which did not generate an inset. As these parts are too small to print,
     // and later code can now assume that there is always minimal 1 inset line.
-    layer->parts.erase(std::remove_if(layer->parts.begin(), layer->parts.end(),
+    layer->parts.erase(std::remove_if(std::begin(layer->parts), std::end(layer->parts),
                 [](const SliceLayerPart& part)
                 {
                 return (part.insets.size() < 1);
