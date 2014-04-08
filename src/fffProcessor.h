@@ -16,8 +16,8 @@
 class fffProcessor
 {
 private:
-    int maxObjectHeight;
-    int fileNr;
+    int maxObjectHeight = 0;
+    int fileNr = 1;
     GCodeExport gcode;
     ConfigSettings& config;
     TimeKeeper timeKeeper;

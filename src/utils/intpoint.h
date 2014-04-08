@@ -29,9 +29,12 @@ Integer points are used to avoid floating point rounding errors, and because Cli
 class Point3
 {
 public:
-    int32_t x,y,z;
-    Point3() {}
-    Point3(const int32_t _x, const int32_t _y, const int32_t _z): x(_x), y(_y), z(_z) {}
+    int32_t x = 0;
+    int32_t y = 0;
+    int32_t z = 0;
+
+    constexpr Point3() {}
+    constexpr Point3(const int32_t _x, const int32_t _y, const int32_t _z): x(_x), y(_y), z(_z) {}
     
     Point3 operator+(const Point3& p) const { return Point3(x+p.x, y+p.y, z+p.z); }
     Point3 operator-(const Point3& p) const { return Point3(x-p.x, y-p.y, z-p.z); }
@@ -84,7 +87,13 @@ public:
 typedef ClipperLib::IntPoint Point;
 class IntPoint {
 public:
-    int X, Y;
+    int X = 0;
+    int Y = 0;
+
+    constexpr IntPoint() {}
+
+    constexpr IntPoint(int X, int Y) : X(X), Y(Y) {}
+
     Point p() { return Point(X, Y); }
 };
 #define POINT_MIN std::numeric_limits<ClipperLib::cInt>::min()

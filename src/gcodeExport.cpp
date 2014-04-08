@@ -8,25 +8,10 @@
 #include "utils/logoutput.h"
 
 GCodeExport::GCodeExport()
-: currentPosition(0,0,0)
 {
-    extrusionAmount = 0;
-    extrusionPerMM = 0;
-    retractionAmount = 4.5;
-    minimalExtrusionBeforeRetraction = 0.0;
-    extrusionAmountAtPreviousRetraction = -10000;
-    extruderSwitchRetraction = 14.5;
-    extruderNr = 0;
-    currentFanSpeed = -1;
-    
-    totalPrintTime = 0.0;
     for(unsigned int e=0; e<MAX_EXTRUDERS; e++)
         totalFilament[e] = 0.0;
     
-    currentSpeed = 0;
-    retractionSpeed = 45;
-    isRetracted = true;
-    setFlavor(GCODE_FLAVOR_REPRAP);
     memset(extruderOffset, 0, sizeof(extruderOffset));
     f = stdout;
 }
@@ -88,7 +73,7 @@ void GCodeExport::setFilename(const char* filename)
 
 bool GCodeExport::isOpened()
 {
-    return f != NULL;
+    return f != nullptr;
 }
 
 void GCodeExport::setExtrusion(int layerThickness, int filamentDiameter, int flow)
@@ -407,16 +392,10 @@ GCodePlanner::GCodePlanner(GCodeExport& gcode, int travelSpeed, int retractionMi
 : gcode(gcode), travelConfig(travelSpeed, 0, "travel")
 {
     lastPosition = gcode.getPositionXY();
-    comb = NULL;
-    extrudeSpeedFactor = 100;
-    travelSpeedFactor = 100;
-    extraTime = 0.0;
-    totalPrintTime = 0.0;
-    forceRetraction = false;
-    alwaysRetract = false;
     currentExtruder = gcode.getExtruderNr();
     this->retractionMinimalDistance = retractionMinimalDistance;
 }
+
 GCodePlanner::~GCodePlanner()
 {
     if (comb)
@@ -433,7 +412,7 @@ void GCodePlanner::addTravel(Point p)
             path->retract = true;
         }
         forceRetraction = false;
-    }else if (comb != NULL)
+    }else if (comb != nullptr)
     {
         vector<Point> pointList;
         if (comb->calc(lastPosition, p, pointList))
@@ -556,7 +535,7 @@ void GCodePlanner::forceMinimalLayerTime(double minTime, int minimalSpeed)
 
 void GCodePlanner::writeGCode(bool liftHeadIfNeeded, int layerThickness)
 {
-    GCodePathConfig* lastConfig = NULL;
+    GCodePathConfig* lastConfig = nullptr;
     int extruder = gcode.getExtruderNr();
 
     // TODO: Foreach loop

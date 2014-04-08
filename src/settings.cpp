@@ -10,92 +10,94 @@
 #define RTRIM_STRING(s) do { while(((s).length() > 0) && isspace((s)[(s).length() - 1])) { (s).erase((s).length() - 1); } } while(0)
 #define TRIM_STRING(s) do { LTRIM_STRING(s); RTRIM_STRING(s); } while(0)
 #define STRINGIFY(_s) #_s
-#define SETTING(name, default) do { _index.push_back(_ConfigSettingIndex(STRINGIFY(name), &name)); name = (default); } while(0)
-#define SETTING2(name, altname, default) do { _index.push_back(_ConfigSettingIndex(STRINGIFY(name), &name)); _index.push_back(_ConfigSettingIndex(STRINGIFY(altname), &name)); name = (default); } while(0)
+#define SETTING(name) do { _index.push_back(_ConfigSettingIndex(STRINGIFY(name), &name)); } while(0)
+#define SETTING_VAL(name, default) do { _index.push_back(_ConfigSettingIndex(STRINGIFY(name), &name)); name = default; } while(0)
+#define SETTING2(name, altname) do { _index.push_back(_ConfigSettingIndex(STRINGIFY(name), &name)); _index.push_back(_ConfigSettingIndex(STRINGIFY(altname), &name)); } while(0)
 
 ConfigSettings::ConfigSettings()
 {
-    SETTING(layerThickness, 100);
-    SETTING(initialLayerThickness, 300);
-    SETTING(filamentDiameter, 2890);
-    SETTING(filamentFlow, 100);
-    SETTING(layer0extrusionWidth, 600);
-    SETTING(extrusionWidth, 400);
-    SETTING(insetCount, 2);
-    SETTING(downSkinCount, 6);
-    SETTING(upSkinCount, 6);
-    SETTING(sparseInfillLineDistance, 100 * extrusionWidth / 20);
-    SETTING(infillOverlap, 15);
-    SETTING(skirtDistance, 6000);
-    SETTING(skirtLineCount, 1);
-    SETTING(skirtMinLength, 0);
+    SETTING(layerThickness);
+    SETTING(initialLayerThickness);
+    SETTING(filamentDiameter);
+    SETTING(filamentFlow);
+    SETTING(layer0extrusionWidth);
+    SETTING(extrusionWidth);
+    SETTING(insetCount);
+    SETTING(downSkinCount);
+    SETTING(upSkinCount);
+    SETTING(sparseInfillLineDistance);
+    SETTING(infillOverlap);
+    SETTING(skirtDistance);
+    SETTING(skirtLineCount);
+    SETTING(skirtMinLength);
 
-    SETTING(initialSpeedupLayers, 4);
-    SETTING(initialLayerSpeed, 20);
-    SETTING(printSpeed, 50);
-    SETTING(infillSpeed, 50);
-    SETTING(inset0Speed, 50);
-    SETTING(insetXSpeed, 50);
-    SETTING(moveSpeed, 150);
-    SETTING(fanFullOnLayerNr, 2);
+    SETTING(retractionAmount);
+    SETTING(retractionAmountPrime);
+    SETTING(retractionAmountExtruderSwitch);
+    SETTING(retractionSpeed);
+    SETTING(retractionMinimalDistance);
+    SETTING(minimalExtrusionBeforeRetraction);
+    SETTING(retractionZHop);
 
-    SETTING(supportType, 0);
-    SETTING(supportAngle, -1);
-    SETTING(supportEverywhere, 0);
-    SETTING(supportLineDistance, sparseInfillLineDistance);
-    SETTING(supportXYDistance, 700);
-    SETTING(supportZDistance, 150);
-    SETTING(supportExtruder, -1);
+    SETTING(enableCombing);
+    SETTING(enableOozeShield);
+    SETTING(wipeTowerSize);
+    SETTING(multiVolumeOverlap);
+    
+    SETTING(initialSpeedupLayers);
+    SETTING(initialLayerSpeed);
+    SETTING(printSpeed);
+    SETTING(infillSpeed);
+    SETTING(inset0Speed);
+    SETTING(insetXSpeed);
+    SETTING(moveSpeed);
+    SETTING(fanFullOnLayerNr);
 
-    SETTING(retractionAmount, 4500);
-    SETTING(retractionAmountPrime, 0);
-    SETTING(retractionSpeed, 45);
-    SETTING(retractionAmountExtruderSwitch, 14500);
-    SETTING(retractionMinimalDistance, 1500);
-    SETTING(minimalExtrusionBeforeRetraction, 100);
-    SETTING(retractionZHop, 0);
+    SETTING(supportType);
+    SETTING(supportAngle);
+    SETTING(supportEverywhere);
+    SETTING(supportLineDistance);
+    SETTING(supportXYDistance);
+    SETTING(supportZDistance);
+    SETTING(supportExtruder);
 
-    SETTING(enableCombing, 1);
-    SETTING(enableOozeShield, 0);
-    SETTING(wipeTowerSize, 0);
-    SETTING(multiVolumeOverlap, 0);
-    SETTING2(objectPosition.X, posx, 102500);
-    SETTING2(objectPosition.Y, posy, 102500);
-    SETTING(objectSink, 0);
+    SETTING(minimalLayerTime);
+    SETTING(minimalFeedrate);
+    SETTING(coolHeadLift);
+    SETTING(fanSpeedMin);
+    SETTING(fanSpeedMax);
 
-    SETTING(raftMargin, 5000);
-    SETTING(raftLineSpacing, 1000);
-    SETTING(raftBaseThickness, 0);
-    SETTING(raftBaseLinewidth, 0);
-    SETTING(raftInterfaceThickness, 0);
-    SETTING(raftInterfaceLinewidth, 0);
-    SETTING(raftInterfaceLineSpacing, 250);
-    SETTING(raftAirGap, 0);
-    SETTING(raftBaseSpeed, 0);
-    SETTING(raftFanSpeed, 0);
-    SETTING(raftSurfaceThickness, 0);
-    SETTING(raftSurfaceLinewidth, 0);
-    SETTING(raftSurfaceLineSpacing, 0);
-    SETTING(raftSurfaceLayers, 0);
-    SETTING(raftSurfaceSpeed, 0);
+    SETTING(raftMargin);
+    SETTING(raftLineSpacing);
+    SETTING(raftBaseThickness);
+    SETTING(raftBaseLinewidth);
+    SETTING(raftBaseSpeed);
+    SETTING(raftInterfaceThickness);
+    SETTING(raftInterfaceLinewidth);
+    SETTING(raftInterfaceLineSpacing);
+    SETTING(raftFanSpeed);
+    SETTING(raftSurfaceThickness);
+    SETTING(raftSurfaceLinewidth);
+    SETTING(raftSurfaceLineSpacing);
+    SETTING(raftSurfaceLayers);
+    SETTING(raftSurfaceSpeed);
+    SETTING(raftAirGap);
 
-    SETTING(minimalLayerTime, 5);
-    SETTING(minimalFeedrate, 10);
-    SETTING(coolHeadLift, 0);
-    SETTING(fanSpeedMin, 100);
-    SETTING(fanSpeedMax, 100);
+    SETTING2(objectPosition.X, posx);
+    SETTING2(objectPosition.Y, posy);
+    SETTING(objectSink);
 
-    SETTING(fixHorrible, 0);
-    SETTING(spiralizeMode, 0);
-    SETTING(gcodeFlavor, GCODE_FLAVOR_REPRAP);
+    SETTING(fixHorrible);
+    SETTING(spiralizeMode);
+    SETTING(gcodeFlavor);
 
     memset(extruderOffset, 0, sizeof(extruderOffset));
-    SETTING(extruderOffset[1].X, 0);
-    SETTING(extruderOffset[1].Y, 0);
-    SETTING(extruderOffset[2].X, 0);
-    SETTING(extruderOffset[2].Y, 0);
-    SETTING(extruderOffset[3].X, 0);
-    SETTING(extruderOffset[3].Y, 0);
+    SETTING_VAL(extruderOffset[1].X, 0);
+    SETTING_VAL(extruderOffset[1].Y, 0);
+    SETTING_VAL(extruderOffset[2].X, 0);
+    SETTING_VAL(extruderOffset[2].Y, 0);
+    SETTING_VAL(extruderOffset[3].X, 0);
+    SETTING_VAL(extruderOffset[3].Y, 0);
 
     startCode =
         "M109 S210     ;Heatup to 210C\n"

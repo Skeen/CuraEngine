@@ -8,26 +8,24 @@
     The Slicer creates layers of polygons from an optimized 3D model.
     The result of the Slicer is a list of polygons without any order or structure.
 */
-
-class SlicerSegment
+struct SlicerSegment
 {
-public:
     Point start, end;
     int faceIndex;
     bool addedToPolygon;
 };
 
-class closePolygonResult
-{   //The result of trying to find a point on a closed polygon line. This gives back the point index, the polygon index, and the point of the connection.
+struct closePolygonResult
+{   
+    //The result of trying to find a point on a closed polygon line. This gives back the point index, the polygon index, and the point of the connection.
     //The line on which the point lays is between pointIdx-1 and pointIdx
-public:
     Point intersectionPoint;
     int polygonIdx;
     unsigned int pointIdx;
 };
-class gapCloserResult
+
+struct gapCloserResult
 {
-public:
     int64_t len;
     int polygonIdx;
     unsigned int pointIdxA;

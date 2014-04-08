@@ -19,8 +19,6 @@
 
 fffProcessor::fffProcessor(ConfigSettings& config) : config(config)
 {
-    fileNr = 1;
-    maxObjectHeight = 0;
 }
 
 void fffProcessor::guiConnect(int portNr)
@@ -772,7 +770,7 @@ void fffProcessor::addVolumeLayerToGCode(SliceDataStorage& storage,
         if (!config.spiralizeMode || int(layerNr) < config.downSkinCount)
             gcodeLayer.moveInsideCombBoundary(config.extrusionWidth * 2);
     }
-    gcodeLayer.setCombBoundary(NULL);
+    gcodeLayer.setCombBoundary(nullptr);
 }
 
 void fffProcessor::addSupportToGCode(SliceDataStorage& storage, GCodePlanner& gcodeLayer,
@@ -867,7 +865,7 @@ void fffProcessor::addSupportToGCode(SliceDataStorage& storage, GCodePlanner& gc
         if (config.supportType == SUPPORT_TYPE_GRID)
             gcodeLayer.addPolygonsByOptimizer(island, &supportConfig);
         gcodeLayer.addPolygonsByOptimizer(supportLines, &supportConfig);
-        gcodeLayer.setCombBoundary(NULL);
+        gcodeLayer.setCombBoundary(nullptr);
     }
 }
 

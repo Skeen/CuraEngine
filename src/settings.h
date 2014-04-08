@@ -89,84 +89,84 @@ class ConfigSettings
 private:
     std::vector<_ConfigSettingIndex> _index;
 public:
-    int layerThickness;
-    int initialLayerThickness;
-    int filamentDiameter;
-    int filamentFlow;
-    int layer0extrusionWidth;
-    int extrusionWidth;
-    int insetCount;
-    int downSkinCount;
-    int upSkinCount;
-    int sparseInfillLineDistance;
-    int infillOverlap;
-    int skirtDistance;
-    int skirtLineCount;
-    int skirtMinLength;
+    int layerThickness          = 100;
+    int initialLayerThickness   = 300;
+    int filamentDiameter        = 2890;
+    int filamentFlow            = 100;
+    int layer0extrusionWidth    = 600;
+    int extrusionWidth          = 400;
+    int insetCount              = 2;
+    int downSkinCount           = 6;
+    int upSkinCount             = 6;
+    int sparseInfillLineDistance = 100 * extrusionWidth / 20;
+    int infillOverlap           = 15;
+    int skirtDistance           = 6000;
+    int skirtLineCount          = 1;
+    int skirtMinLength          = 0;
 
     //Retraction settings
-    int retractionAmount;
-    int retractionAmountPrime;
-    int retractionAmountExtruderSwitch;
-    int retractionSpeed;
-    int retractionMinimalDistance;
-    int minimalExtrusionBeforeRetraction;
-    int retractionZHop;
+    int retractionAmount        = 4500;
+    int retractionAmountPrime   = 0;
+    int retractionAmountExtruderSwitch = 14500;
+    int retractionSpeed         = 45;
+    int retractionMinimalDistance = 1500;
+    int minimalExtrusionBeforeRetraction = 100;
+    int retractionZHop          = 0;
 
-    int enableCombing;
-    int enableOozeShield;
-    int wipeTowerSize;
-    int multiVolumeOverlap;
+    int enableCombing           = 1;
+    int enableOozeShield        = 0;
+    int wipeTowerSize           = 0;
+    int multiVolumeOverlap      = 0;
 
-    int initialSpeedupLayers;
-    int initialLayerSpeed;
-    int printSpeed;
-    int infillSpeed;
-    int inset0Speed;
-    int insetXSpeed;
-    int moveSpeed;
-    int fanFullOnLayerNr;
+    int initialSpeedupLayers    = 4;
+    int initialLayerSpeed       = 20;
+    int printSpeed              = 50;
+    int infillSpeed             = 50;
+    int inset0Speed             = 50;
+    int insetXSpeed             = 50;
+    int moveSpeed               = 150;
+    int fanFullOnLayerNr        = 2;
 
     //Support material
-    int supportType;
-    int supportAngle;
-    int supportEverywhere;
-    int supportLineDistance;
-    int supportXYDistance;
-    int supportZDistance;
-    int supportExtruder;
+    int supportType             = SUPPORT_TYPE_GRID;
+    int supportAngle            = -1;
+    int supportEverywhere       = 0;
+    int supportLineDistance     = sparseInfillLineDistance;
+    int supportXYDistance       = 700;
+    int supportZDistance        = 150;
+    int supportExtruder         = -1;
 
     //Cool settings
-    int minimalLayerTime;
-    int minimalFeedrate;
-    int coolHeadLift;
-    int fanSpeedMin;
-    int fanSpeedMax;
+    int minimalLayerTime        = 5;
+    int minimalFeedrate         = 10;
+    int coolHeadLift            = 0;
+    int fanSpeedMin             = 100;
+    int fanSpeedMax             = 100;
 
     //Raft settings
-    int raftMargin;
-    int raftLineSpacing;
-    int raftBaseThickness;
-    int raftBaseLinewidth;
-    int raftBaseSpeed;
-    int raftInterfaceThickness;
-    int raftInterfaceLinewidth;
-    int raftInterfaceLineSpacing;
-    int raftFanSpeed;
-    int raftSurfaceThickness;
-    int raftSurfaceLinewidth;
-    int raftSurfaceLineSpacing;
-    int raftSurfaceLayers;
-    int raftSurfaceSpeed;
-    int raftAirGap;
+    int raftMargin              = 5000;
+    int raftLineSpacing         = 1000;
+    int raftBaseThickness       = 0;
+    int raftBaseLinewidth       = 0;
+    int raftBaseSpeed           = 0;
+    int raftInterfaceThickness  = 0;
+    int raftInterfaceLinewidth  = 0;
+    int raftInterfaceLineSpacing = 250;
+    int raftFanSpeed            = 0;
+    int raftSurfaceThickness    = 0;
+    int raftSurfaceLinewidth    = 0;
+    int raftSurfaceLineSpacing  = 0;
+    int raftSurfaceLayers       = 0;
+    int raftSurfaceSpeed        = 0;
+    int raftAirGap              = 0;
 
     FMatrix3x3 matrix;
-    IntPoint objectPosition;
-    int objectSink;
+    IntPoint objectPosition     = IntPoint(102500, 102500);
+    int objectSink              = 0;
 
-    int fixHorrible;
-    int spiralizeMode;
-    int gcodeFlavor;
+    int fixHorrible             = 0;
+    int spiralizeMode           = 0;
+    int gcodeFlavor             = GCODE_FLAVOR_REPRAP;
 
     IntPoint extruderOffset[MAX_EXTRUDERS];
     std::string startCode;

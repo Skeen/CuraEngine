@@ -224,7 +224,7 @@ void TimeEstimateCalculator::planner_reverse_pass_kernel(Block *previous, Block 
 
 void TimeEstimateCalculator::reverse_pass()
 {
-    Block* block[3] = {NULL, NULL, NULL};
+    Block* block[3] = {nullptr, nullptr, nullptr};
     for(unsigned int n=blocks.size()-1; int(n)>=0; n--)
     {
         block[2]= block[1];
@@ -262,7 +262,7 @@ void TimeEstimateCalculator::planner_forward_pass_kernel(Block *previous, Block 
 
 void TimeEstimateCalculator::forward_pass()
 {
-    Block* block[3] = {NULL, NULL, NULL};
+    Block* block[3] = {nullptr, nullptr, nullptr};
     for(Block& b : blocks)
     {
         block[0]= block[1];
@@ -270,7 +270,7 @@ void TimeEstimateCalculator::forward_pass()
         block[2] = &b;
         planner_forward_pass_kernel(block[0], block[1], block[2]);
     }
-    planner_forward_pass_kernel(block[1], block[2], NULL);
+    planner_forward_pass_kernel(block[1], block[2], nullptr);
 }
 
 // Recalculates the trapezoid speed profiles for all blocks in the plan according to the 
@@ -279,7 +279,7 @@ void TimeEstimateCalculator::forward_pass()
 void TimeEstimateCalculator::recalculate_trapezoids()
 {
     Block *current;
-    Block *next = NULL;
+    Block *next = nullptr;
 
     for(unsigned int n=0; n<blocks.size(); n--)
     {
@@ -297,7 +297,7 @@ void TimeEstimateCalculator::recalculate_trapezoids()
         }
     }
     // Last/newest block in buffer. Exit speed is set with MINIMUM_PLANNER_SPEED. Always recalculated.
-    if(next != NULL)
+    if(next != nullptr)
     {
         calculate_trapezoid_for_block(next, next->entry_speed/next->nominal_feedrate, MINIMUM_PLANNER_SPEED/next->nominal_feedrate);
         next->recalculate_flag = false;

@@ -16,26 +16,27 @@ class GCodeExport
 {
 private:
     FILE* f;
-    double extrusionAmount;
-    double extrusionPerMM;
-    double retractionAmount;
+    double extrusionAmount = 0;
+    double extrusionPerMM  = 0;
+    double retractionAmount = 4.5;
     double retractionAmountPrime;
     int retractionZHop;
-    double extruderSwitchRetraction;
-    double minimalExtrusionBeforeRetraction;
-    double extrusionAmountAtPreviousRetraction;
-    Point3 currentPosition;
+    double extruderSwitchRetraction = 14.5;
+    double minimalExtrusionBeforeRetraction = 0.0;
+    double extrusionAmountAtPreviousRetraction = -10000;
+    Point3 currentPosition = Point3(0,0,0);
     Point extruderOffset[MAX_EXTRUDERS];
     char extruderCharacter[MAX_EXTRUDERS];
-    int currentSpeed, retractionSpeed;
+    int currentSpeed = 0;
+    int retractionSpeed = 45;
     int zPos;
-    bool isRetracted;
-    int extruderNr;
-    int currentFanSpeed;
-    int flavor;
+    bool isRetracted = true;
+    int extruderNr = 0;
+    int currentFanSpeed = -1;
+    int flavor = GCODE_FLAVOR_REPRAP;
     
     double totalFilament[MAX_EXTRUDERS];
-    double totalPrintTime;
+    double totalPrintTime = 0.0;
     TimeEstimateCalculator estimateCalculator;
 public:
     
@@ -99,12 +100,12 @@ public:
 class GCodePathConfig
 {
 public:
-    int speed;
-    int lineWidth;
-    const char* name;
-    bool spiralize;
+    int speed = 0;
+    int lineWidth = 0;
+    const char* name = nullptr;
+    bool spiralize = false;
     
-    GCodePathConfig() : speed(0), lineWidth(0), name(NULL), spiralize(false) {}
+    GCodePathConfig() {}
     GCodePathConfig(int speed, int lineWidth, const char* name) : speed(speed), lineWidth(lineWidth), name(name), spiralize(false) {}
     
     void setData(int speed, int lineWidth, const char* name)
@@ -135,17 +136,17 @@ private:
     
     Point lastPosition;
     vector<GCodePath> paths;
-    Comb* comb;
+    Comb* comb = nullptr;
     
     GCodePathConfig travelConfig;
-    int extrudeSpeedFactor;
-    int travelSpeedFactor;
+    int extrudeSpeedFactor = 100;
+    int travelSpeedFactor = 100;
     int currentExtruder;
     int retractionMinimalDistance;
-    bool forceRetraction;
-    bool alwaysRetract;
-    double extraTime;
-    double totalPrintTime;
+    bool forceRetraction = false;
+    bool alwaysRetract = false;
+    double extraTime = 0.0;
+    double totalPrintTime = 0.0;
 private:
     GCodePath* getLatestPathWithConfig(GCodePathConfig* config);
     void forceNewPathStart();
@@ -173,7 +174,7 @@ public:
         if (polygons)
             comb = new Comb(*polygons);
         else
-            comb = NULL;
+            comb = nullptr;
     }
     
     void setAlwaysRetract(bool alwaysRetract)
