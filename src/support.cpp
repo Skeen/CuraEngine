@@ -74,7 +74,7 @@ void generateSupportGrid(SupportStorage& storage, OptimizedModel* om, int suppor
         for(int32_t y=0; y<storage.gridHeight; y++)
         {
             unsigned int n = x+y*storage.gridWidth;
-            std::sort(storage.grid[n].begin(), storage.grid[n].end(),
+            std::sort(std::begin(storage.grid[n]), std::end(storage.grid[n]),
                       [](const SupportPoint& a, const SupportPoint& b)
                         { return a.z - b.z; });
         }

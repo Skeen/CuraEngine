@@ -47,7 +47,7 @@ void optimizePolygons(Polygons& polys)
         optimizePolygon(r);
     }
     // Remove all the ones below 3 in size
-    polys.erase(std::remove_if(polys.begin(), polys.end(),
+    polys.erase(std::remove_if(std::begin(polys), std::end(polys),
             [](PolygonRef r)
             {
                 return (r.size() < 3);

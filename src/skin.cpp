@@ -19,7 +19,7 @@ void generateSkins(int layerNr, SliceVolumeStorage& storage, int extrusionWidth,
             upskin.add(thinWalls);
             downskin.add(thinWalls);
         }
-        if (int(layerNr - downSkinCount) >= 0)
+        if (static_cast<int>(layerNr - downSkinCount) >= 0)
         {
             SliceLayer* layer2 = &storage.layers[layerNr - downSkinCount];
             for(SliceLayerPart& comp : layer2->parts)
@@ -28,7 +28,7 @@ void generateSkins(int layerNr, SliceVolumeStorage& storage, int extrusionWidth,
                     downskin = downskin.difference(comp.insets[comp.insets.size() - 1]);
             }
         }
-        if (int(layerNr + upSkinCount) < (int)storage.layers.size())
+        if (static_cast<int>(layerNr + upSkinCount) < static_cast<int>(storage.layers.size()))
         {
             SliceLayer* layer2 = &storage.layers[layerNr + upSkinCount];
             for(SliceLayerPart& comp : layer2->parts)
@@ -41,13 +41,13 @@ void generateSkins(int layerNr, SliceVolumeStorage& storage, int extrusionWidth,
         part.skinOutline = upskin.unionPolygons(downskin);
 
         double minAreaSize = (2 * M_PI * INT2MM(extrusionWidth) * INT2MM(extrusionWidth)) * 0.3;
-        part.skinOutline.erase(std::remove_if(part.skinOutline.begin(), part.skinOutline.end(),
+        part.skinOutline.erase(std::remove_if(std::begin(part.skinOutline), std::end(part.skinOutline),
                 [minAreaSize](PolygonRef r)
                 {
                     // Only create an up/down skin if the area is large enough. So you do not create tiny blobs of "trying to fill"
                     double area = INT2MM(INT2MM(fabs(r.area())));
                     return (area < minAreaSize);
-                }), part.skinOutline.end());
+                }), std::end(part.skinOutline));
     }
 }
 
@@ -61,7 +61,7 @@ void generateSparse(int layerNr, SliceVolumeStorage& storage, int extrusionWidth
         Polygons downskin = sparse;
         Polygons upskin = sparse;
         
-        if (int(layerNr - downSkinCount) >= 0)
+        if (static_cast<int>(layerNr - downSkinCount) >= 0)
         {
             SliceLayer* layer2 = &storage.layers[layerNr - downSkinCount];
             for(SliceLayerPart& comp : layer2->parts)
@@ -77,7 +77,7 @@ void generateSparse(int layerNr, SliceVolumeStorage& storage, int extrusionWidth
                 }
             }
         }
-        if (int(layerNr + upSkinCount) < (int)storage.layers.size())
+        if (static_cast<int>(layerNr + upSkinCount) < static_cast<int>(storage.layers.size()))
         {
             SliceLayer* layer2 = &storage.layers[layerNr + upSkinCount];
             for(SliceLayerPart& comp : layer2->parts)
@@ -97,13 +97,13 @@ void generateSparse(int layerNr, SliceVolumeStorage& storage, int extrusionWidth
         Polygons result = upskin.unionPolygons(downskin);
 
         double minAreaSize = 3.0;//(2 * M_PI * INT2MM(config.extrusionWidth) * INT2MM(config.extrusionWidth)) * 3;
-        result.erase(std::remove_if(result.begin(), result.end(),
+        result.erase(std::remove_if(std::begin(result), std::end(result),
                 [minAreaSize](PolygonRef r)
                 {
                     // Only create an up/down skin if the area is large enough. So you do not create tiny blobs of "trying to fill"
                     double area = INT2MM(INT2MM(fabs(r.area())));
                     return (area < minAreaSize);
-                }), result.end());
+                }), std::end(result));
 
         part.sparseOutline = sparse.difference(result);
     }

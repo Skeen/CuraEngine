@@ -11,7 +11,8 @@ LIBS_DIR = libs
 
 VERSION ?= DEV
 CXX ?= g++
-CFLAGS += -c -Wall -Wextra -O3 -fomit-frame-pointer -std=c++11 -DVERSION=\"$(VERSION)\" -isystem libs
+# TODO: Add -Weffc++, and fix errors
+CFLAGS += -c -Wall -Wextra -Wold-style-cast -Woverloaded-virtual -O3 -fomit-frame-pointer -std=c++11 -DVERSION=\"$(VERSION)\" -isystem libs
 # also include debug symbols
 #CFLAGS+=-ggdb
 LDFLAGS += -Lbuild/ -lclipper -flto
