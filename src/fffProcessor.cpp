@@ -270,7 +270,7 @@ void fffProcessor::processSliceData(SliceDataStorage& storage)
         for (SliceVolumeStorage& svs : storage.volumes)
         {
             int insetCount = config.insetCount;
-            if (config.spiralizeMode && (int(layerNr) < config.downSkinCount) &&
+            if (config.spiralizeMode && (static_cast<int>(layerNr) < config.downSkinCount) &&
                 layerNr % 2 == 1)    // Add extra insets every 2 layers when
                                      // spiralizing, this makes bottoms of cups
                                      // watertight.
@@ -344,7 +344,7 @@ void fffProcessor::processSliceData(SliceDataStorage& storage)
         // and infill for the first
         // X layers when spiralize
         // is choosen.
-        if (!config.spiralizeMode || int(layerNr) < config.downSkinCount)
+        if (!config.spiralizeMode || static_cast<int>(layerNr) < config.downSkinCount)
         {
             for (SliceVolumeStorage& svs : storage.volumes)
             {
@@ -548,7 +548,7 @@ void fffProcessor::writeGCode(SliceDataStorage& storage)
         int extrusionWidth = config.extrusionWidth;
         if (layerNr == 0)
             extrusionWidth = config.layer0extrusionWidth;
-        if (int(layerNr) < config.initialSpeedupLayers)
+        if (static_cast<int>(layerNr) < config.initialSpeedupLayers)
         {
             int n = config.initialSpeedupLayers;
 #define SPEED_SMOOTH(speed)                                                    \
@@ -629,7 +629,7 @@ void fffProcessor::writeGCode(SliceDataStorage& storage)
             fanSpeed = config.fanSpeedMin * n / 50 +
                        config.fanSpeedMax * (50 - n) / 50;
         }
-        if (int(layerNr) < config.fanFullOnLayerNr)
+        if (static_cast<int>(layerNr) < config.fanFullOnLayerNr)
         {
             // Slow down the fan on the layers below the [fanFullOnLayerNr],
             // where layer 0 is speed 0.
@@ -638,8 +638,9 @@ void fffProcessor::writeGCode(SliceDataStorage& storage)
         gcode.writeFanCommand(fanSpeed);
 
         gcodeLayer.writeGCode(config.coolHeadLift > 0,
-                              int(layerNr) > 0 ? config.layerThickness
-                                               : config.initialLayerThickness);
+                              static_cast<int>(layerNr) > 0
+                                  ? config.layerThickness
+                                  : config.initialLayerThickness);
     }
 
     cura::log("Wrote layers in %5.2fs.\n", timeKeeper.restart());
@@ -769,7 +770,7 @@ void fffProcessor::addVolumeLayerToGCode(SliceDataStorage& storage,
 
         // After a layer part, make sure the nozzle is inside the comb boundary,
         // so we do not retract on the perimeter.
-        if (!config.spiralizeMode || int(layerNr) < config.downSkinCount)
+        if (!config.spiralizeMode || static_cast<int>(layerNr) < config.downSkinCount)
             gcodeLayer.moveInsideCombBoundary(config.extrusionWidth * 2);
     }
     gcodeLayer.setCombBoundary(NULL);
