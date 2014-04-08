@@ -21,7 +21,10 @@ const static int clipper_init = (0);
 
 class PolygonRef
 {
+    using iterator = ClipperLib::Path::iterator;
+
     ClipperLib::Path* polygon;
+
     PolygonRef()
     : polygon(NULL)
     {}
@@ -29,6 +32,27 @@ public:
     PolygonRef(ClipperLib::Path& polygon)
     : polygon(&polygon)
     {}
+
+    // Iterator support
+    iterator begin()
+    {
+        return polygon->begin();
+    }
+    
+    iterator end()
+    {
+        return polygon->end();
+    }
+
+    iterator erase(iterator position)
+    {
+        return polygon->erase(position);
+    }
+
+    iterator erase(iterator first, iterator last)
+    {
+        return polygon->erase(first, last);
+    }
     
     unsigned int size() const
     {
@@ -149,9 +173,31 @@ public:
 
 class Polygons
 {
-private:
+    using iterator = ClipperLib::Paths::iterator;
     ClipperLib::Paths polygons;
+
 public:
+    // Iterator support
+    iterator begin()
+    {
+        return polygons.begin();
+    }
+    
+    iterator end()
+    {
+        return polygons.end();
+    }
+
+    iterator erase(iterator position)
+    {
+        return polygons.erase(position);
+    }
+
+    iterator erase(iterator first, iterator last)
+    {
+        return polygons.erase(first, last);
+    }
+
     unsigned int size()
     {
         return polygons.size();

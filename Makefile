@@ -14,9 +14,9 @@ CXX ?= g++
 CFLAGS += -c -Wall -Wextra -O3 -fomit-frame-pointer -std=c++11 -DVERSION=\"$(VERSION)\" -isystem libs
 # also include debug symbols
 #CFLAGS+=-ggdb
-LDFLAGS += -Lbuild/ -lclipper
+LDFLAGS += -Lbuild/ -lclipper -flto
 
-SOURCES_RAW = bridge.cpp comb.cpp gcodeExport.cpp infill.cpp inset.cpp layerPart.cpp main.cpp optimizedModel.cpp pathOrderOptimizer.cpp polygonOptimizer.cpp raft.cpp settings.cpp skin.cpp skirt.cpp slicer.cpp support.cpp timeEstimate.cpp
+SOURCES_RAW = bridge.cpp comb.cpp multiVolumes.cpp fffProcessor.cpp gcodeExport.cpp infill.cpp inset.cpp layerPart.cpp main.cpp optimizedModel.cpp pathOrderOptimizer.cpp polygonOptimizer.cpp raft.cpp settings.cpp skin.cpp skirt.cpp slicer.cpp support.cpp timeEstimate.cpp
 SOURCES_RAW += modelFile/modelFile.cpp utils/gettime.cpp utils/logoutput.cpp utils/socket.cpp
 SOURCES = $(addprefix $(SRC_DIR)/,$(SOURCES_RAW))
 
