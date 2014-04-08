@@ -7,7 +7,7 @@ void PathOrderOptimizer::optimize()
     for(PolygonRef poly : polygons)
     {
         int best = -1;
-        float bestDist = 0xFFFFFFFFFFFFFFFFLL;
+        float bestDist = std::numeric_limits<float>::max();
         for(unsigned int j=0; j<poly.size(); j++)
         {
             float dist = vSize2f(poly[j] - startPoint);
@@ -22,10 +22,11 @@ void PathOrderOptimizer::optimize()
     }
 
     Point p0 = startPoint;
-    for(unsigned int n=0; n<polygons.size(); n++)
+
+    for(unsigned int x=0; x<polygons.size(); x++)
     {
         int best = -1;
-        float bestDist = 0xFFFFFFFFFFFFFFFFLL;
+        float bestDist = std::numeric_limits<float>::max();
         for(unsigned int i=0;i<polygons.size(); i++)
         {
             if (picked[i] || polygons[i].size() < 1)

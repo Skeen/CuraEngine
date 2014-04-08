@@ -1,13 +1,15 @@
 /** Copyright (C) 2013 David Braam - Released under terms of the AGPLv3 License */
 #include <stdio.h>
+#include <map>
 
 #include "utils/gettime.h"
 #include "utils/logoutput.h"
 #include "optimizedModel.h"
 
-#define MELD_DIST MM2INT(0.03)
+constexpr int64_t MELD_DIST = MM2INT(0.03);
+
 OptimizedVolume::OptimizedVolume(SimpleVolume* volume, OptimizedModel* model)
-: model(model)
+: model(model)//, points(volume->faces.size() * 3), faces(volume->faces.size())
 {
     points.reserve(volume->faces.size() * 3);
     faces.reserve(volume->faces.size());
@@ -81,6 +83,50 @@ OptimizedVolume::OptimizedVolume(SimpleVolume* volume, OptimizedModel* model)
     //fprintf(stdout, "  Number of open faces: %i\n", openFacesCount);
 }
 
+int OptimizedVolume::getFaceIdxWithPoints(int idx0, int idx1, int notFaceIdx)
+{
+    for (unsigned int i = 0; i < points[idx0].faceIndexList.size(); i++)
+    {
+        int f0 = points[idx0].faceIndexList[i];
+        if (f0 == notFaceIdx)
+            continue;
+        for (unsigned int j = 0; j < points[idx1].faceIndexList.size(); j++)
+        {
+            int f1 = points[idx1].faceIndexList[j];
+            if (f1 == notFaceIdx)
+                continue;
+            if (f0 == f1)
+                return f0;
+        }
+    }
+    return -1;
+}
+
+OptimizedModel::OptimizedModel(SimpleModel* model, Point3 center)
+    : //volumes(model->volumes.size()),
+        vMin(model->min()), vMax(model->max()),
+      modelSize(vMax - vMin)
+{
+    volumes.reserve(model->volumes.size());
+
+    for (SimpleVolume& sv : model->volumes)
+    {
+        volumes.push_back(OptimizedVolume(&sv, this));
+    }
+
+    Point3 vOffset((vMin.x + vMax.x) / 2, (vMin.y + vMax.y) / 2, vMin.z);
+    vOffset -= center;
+    for (OptimizedVolume& ov : volumes)
+    {
+        for (OptimizedPoint3& op : ov.points)
+        {
+            op.p -= vOffset;
+        }
+    }
+
+    vMin -= vOffset;
+    vMax -= vOffset;
+}
 
 void OptimizedModel::saveDebugSTL(const char* filename)
 {

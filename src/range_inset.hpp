@@ -2,13 +2,16 @@
 #define _RANGE_INSET
 
 template <typename Collection>
-struct RangeInset
+class RangeInset
 {
-    RangeInset(Collection& c, int start_inset = 0, int stop_inset = 0) : c(c), start_inset(start_inset), stop_inset(stop_inset) {}
+    public:
+    RangeInset(Collection& c, int start_inset, int stop_inset)
+        : c(c), start_inset(start_inset), stop_inset(stop_inset) {}
 
-    auto begin() const { return c.begin() + start_inset; }
-    auto end() const { return c.end() - stop_inset; }
+    /*typename Collection::iterator*/ auto begin() const { return c.begin() + start_inset; }
+    /*typename Collection::iterator*/ auto end() const { return c.end() - stop_inset; }
 
+    private:
     Collection& c;
     int start_inset;
     int stop_inset;

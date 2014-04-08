@@ -56,9 +56,9 @@ public:
     Point gridOffset;
     int32_t gridScale;
     int32_t gridWidth, gridHeight;
-    vector<SupportPoint>* grid;
-   	SupportStorage(){grid = nullptr;}
-	  ~SupportStorage(){if(grid) delete [] grid;}
+    vector<SupportPoint>* grid = nullptr;
+   	SupportStorage(){}
+	~SupportStorage(){if(grid) delete [] grid;}
 };
 /******************/
 

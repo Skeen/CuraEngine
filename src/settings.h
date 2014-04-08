@@ -9,26 +9,37 @@
 #define VERSION "DEV"
 #endif
 
-#define FIX_HORRIBLE_UNION_ALL_TYPE_A    0x01
-#define FIX_HORRIBLE_UNION_ALL_TYPE_B    0x02
-#define FIX_HORRIBLE_EXTENSIVE_STITCHING 0x04
-#define FIX_HORRIBLE_UNION_ALL_TYPE_C    0x08
-#define FIX_HORRIBLE_KEEP_NONE_CLOSED    0x10
-
-/**
- * Type of support material.
- * Grid is a X/Y grid with an outline, which is very strong, provides good support. But in some cases is hard to remove.
- * Lines give a row of lines which break off one at a time, making them easier to remove, but they do not support as good as the grid support.
- */
-#define SUPPORT_TYPE_GRID                0
-#define SUPPORT_TYPE_LINES               1
-
 #ifndef DEFAULT_CONFIG_PATH
 #define DEFAULT_CONFIG_PATH "default.cfg"
 #endif
 
 #define CONFIG_MULTILINE_SEPARATOR "\"\"\""
 
+// TODO: Use multiple bools instead
+enum Fix_Horrible
+{
+    FIX_HORRIBLE_UNION_ALL_TYPE_A = 0x01,
+    FIX_HORRIBLE_UNION_ALL_TYPE_B = 0x02,
+    FIX_HORRIBLE_EXTENSIVE_STITCHING = 0x04,
+    FIX_HORRIBLE_UNION_ALL_TYPE_C = 0x08,
+    FIX_HORRIBLE_KEEP_NONE_CLOSED = 0x10
+};
+
+/**
+ * Type of support material.
+ * Grid is a X/Y grid with an outline, which is very strong, provides good support. But in some cases is hard to remove.
+ * Lines give a row of lines which break off one at a time, making them easier to remove, but they do not support as good as the grid support.
+ */
+// TODO: Use strongly typed enum
+enum Support_Type
+{
+    SUPPORT_TYPE_GRID = 0,
+    SUPPORT_TYPE_LINES = 1
+};
+
+// TODO: Use strongly typed enum
+enum GCode_Flavor
+{
 /**
  * RepRap flavored GCode is Marlin/Sprinter/Repetier based GCode.
  *  This is the most commonly used GCode set.
@@ -37,7 +48,7 @@
  *  Retraction is done on E values with G1. Start/end code is added.
  *  M106 Sxxx and M107 are used to turn the fan on/off.
  **/
-#define GCODE_FLAVOR_REPRAP              0
+GCODE_FLAVOR_REPRAP = 0,
 /**
  * UltiGCode flavored is Marlin based GCode.
  *  UltiGCode uses less settings on the slicer and puts more settings in the firmware. This makes for more hardware/material independed GCode.
@@ -47,7 +58,7 @@
  *  Start/end code is not added.
  *  M106 Sxxx and M107 are used to turn the fan on/off.
  **/
-#define GCODE_FLAVOR_ULTIGCODE           1
+GCODE_FLAVOR_ULTIGCODE = 1,
 /**
  * Makerbot flavored GCode.
  *  Looks a lot like RepRap GCode with a few changes. Requires MakerWare to convert to X3G files.
@@ -57,23 +68,22 @@
  *   Fan OFF is M127 T0
  *   Homing is done with G162 X Y F2000
  **/
-#define GCODE_FLAVOR_MAKERBOT           2
-
+GCODE_FLAVOR_MAKERBOT = 2,
 /**
  * Bits From Bytes GCode.
  *  BFB machines use RPM instead of E. Which is coupled to the F instead of independed. (M108 S[deciRPM])
  *  Need X,Y,Z,F on every line.
  *  Needs extruder ON/OFF (M101, M103), has auto-retrection (M227 S[2560*mm] P[2560*mm])
  **/
-#define GCODE_FLAVOR_BFB                3
-
+GCODE_FLAVOR_BFB = 3,
 /**
  * MACH3 GCode
  *  MACH3 is CNC control software, which expects A/B/C/D for extruders, instead of E.
  **/
-#define GCODE_FLAVOR_MACH3              4
+GCODE_FLAVOR_MACH3 = 4
+};
 
-#define MAX_EXTRUDERS 16
+constexpr unsigned int MAX_EXTRUDERS = 16;
 
 class _ConfigSettingIndex
 {
@@ -169,8 +179,27 @@ public:
     int gcodeFlavor             = GCODE_FLAVOR_REPRAP;
 
     IntPoint extruderOffset[MAX_EXTRUDERS];
-    std::string startCode;
-    std::string endCode;
+    std::string startCode = R"(
+M109 S210     ;Heatup to 210C
+G21           ;metric values
+G90           ;absolute positioning
+G28           ;Home
+G1 Z15.0 F300 ;move the platform down 15mm
+G92 E0        ;zero the extruded length
+G1 F200 E5    ;extrude 5mm of feed stock
+G92 E0        ;zero the extruded length again
+)";
+
+    std::string endCode = R"(
+M104 S0                     ;extruder heater off
+M140 S0                     ;heated bed heater off (if you have it)
+G91                            ;relative positioning
+G1 E-1 F300                    ;retract the filament a bit before lifting the nozzle, to release some of the pressure
+G1 Z+0.5 E-5 X-20 Y-20 F9000   ;move Z up a bit and retract filament even more
+G28 X0 Y0                      ;move X/Y to min endstops, so the head is out of the way
+M84                         ;steppers off
+G90                         ;absolute positioning
+)";
 
     ConfigSettings();
     bool setSetting(const char* key, const char* value);

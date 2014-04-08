@@ -21,16 +21,15 @@ public:
     class Position
     {
     public:
-        Position() {for(unsigned int n=0;n<NUM_AXIS;n++) axis[n] = 0;}
-        Position(double x, double y, double z, double e) {axis[0] = x;axis[1] = y;axis[2] = z;axis[3] = e;}
+        Position() : axis{0,0,0,0} {}
+        Position(double x, double y, double z, double e) : axis{x,y,z,e} {}
         double axis[NUM_AXIS];
         
         double& operator[](const int n) { return axis[n]; }
     };
 
-    class Block
+    struct Block
     {
-    public:
         bool recalculate_flag;
         
         double accelerate_until;

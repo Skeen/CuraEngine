@@ -7,8 +7,13 @@
 class PolygonDebug
 {
 private:
-    Polygons polys;
     const char* filename;
+    Polygons polys;
+
+private:
+    PolygonDebug(const PolygonDebug& other);
+    PolygonDebug operator=(const PolygonDebug&);
+
 public:
     PolygonDebug(const char* filename)
     : filename(filename)
@@ -16,9 +21,8 @@ public:
     }
     
     PolygonDebug(const char* filename, Polygons polys)
-    : filename(filename)
+    : filename(filename), polys(polys)
     {
-        add(polys);
     }
     
     PolygonDebug& add(Polygons polys)

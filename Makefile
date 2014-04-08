@@ -9,12 +9,22 @@ BUILD_DIR = build
 SRC_DIR = src
 LIBS_DIR = libs
 
+BUILD_TYPE = RELEASE
+
 VERSION ?= DEV
 CXX ?= g++
-# TODO: Add -Weffc++, and fix errors
-CFLAGS += -c -Wall -Wextra -Wold-style-cast -Woverloaded-virtual -O3 -fomit-frame-pointer -std=c++11 -DVERSION=\"$(VERSION)\" -isystem libs
+
+CFLAGS += -c -Wall -Wextra -Wold-style-cast -Woverloaded-virtual -std=c++11 -DVERSION=\"$(VERSION)\" -isystem libs
 # also include debug symbols
-#CFLAGS+=-ggdb
+ifeq ($(BUILD_TYPE),DEBUG)
+	CFLAGS+=-ggdb -Og -g
+endif
+ifeq ($(BUILD_TYPE),PROFILE)
+	CFLAGS+= -pg
+endif
+ifeq ($(BUILD_TYPE),RELEASE)
+	CFLAGS+= -O3 -fomit-frame-pointer
+endif
 LDFLAGS += -Lbuild/ -lclipper -flto
 
 SOURCES_RAW = bridge.cpp comb.cpp multiVolumes.cpp fffProcessor.cpp gcodeExport.cpp infill.cpp inset.cpp layerPart.cpp main.cpp optimizedModel.cpp pathOrderOptimizer.cpp polygonOptimizer.cpp raft.cpp settings.cpp skin.cpp skirt.cpp slicer.cpp support.cpp timeEstimate.cpp

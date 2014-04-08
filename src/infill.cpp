@@ -68,7 +68,7 @@ void generateLineInfill(const Polygons& in_outline, Polygons& result, int extrus
             break;
     
         std::sort(std::begin(list), std::end(list));
-       for(unsigned int i = 0; i + 1 < list.size(); i+=2)
+        for(unsigned int i = 0; i + 1 < list.size(); i+=2)
         {
             if (list[i+1] - list[i] < extrusionWidth / 5)
                 continue;

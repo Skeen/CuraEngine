@@ -116,14 +116,14 @@ public:
     }
 };
 
-class GCodePath
+struct GCodePath
 {
-public:
     GCodePathConfig* config;
     bool retract;
     int extruder;
     vector<Point> points;
-    bool done;//Path is finished, no more moves should be added, and a new path should be started instead of any appending done to this one.
+    //Path is finished, no more moves should be added, and a new path should be started instead of any appending done to this one.
+    bool done;
 };
 
 //The GCodePlanner class stores multiple moves that are planned.

@@ -2,6 +2,8 @@
 #ifndef SLICER_H
 #define SLICER_H
 
+#include <map>
+
 #include "optimizedModel.h"
 #include "utils/polygon.h"
 /*

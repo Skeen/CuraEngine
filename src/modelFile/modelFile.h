@@ -8,7 +8,6 @@ The format returned is a Model class with an array of faces, which have integer 
 **/
 
 #include <vector>
-using std::vector;
 #include "../utils/intpoint.h"
 #include "../utils/floatpoint.h"
 
@@ -30,7 +29,7 @@ public:
 class SimpleVolume
 {
 public:
-    vector<SimpleFace> faces;
+    std::vector<SimpleFace> faces;
     
     void addFace(Point3& v0, Point3& v1, Point3& v2)
     {
@@ -42,17 +41,14 @@ public:
         if (faces.size() < 1)
             return Point3(0, 0, 0);
         Point3 ret = faces[0].v[0];
-        for(unsigned int i=0; i<faces.size(); i++)
+        for(SimpleFace& sf : faces)
         {
-            SET_MIN(ret.x, faces[i].v[0].x);
-            SET_MIN(ret.y, faces[i].v[0].y);
-            SET_MIN(ret.z, faces[i].v[0].z);
-            SET_MIN(ret.x, faces[i].v[1].x);
-            SET_MIN(ret.y, faces[i].v[1].y);
-            SET_MIN(ret.z, faces[i].v[1].z);
-            SET_MIN(ret.x, faces[i].v[2].x);
-            SET_MIN(ret.y, faces[i].v[2].y);
-            SET_MIN(ret.z, faces[i].v[2].z);
+            for(int x=0; x<3; x++)
+            {
+                SET_MIN(ret.x, sf.v[x].x);
+                SET_MIN(ret.y, sf.v[x].y);
+                SET_MIN(ret.z, sf.v[x].z);
+            }
         }
         return ret;
     }
@@ -61,17 +57,14 @@ public:
         if (faces.size() < 1)
             return Point3(0, 0, 0);
         Point3 ret = faces[0].v[0];
-        for(unsigned int i=0; i<faces.size(); i++)
+        for(SimpleFace& sf : faces)
         {
-            SET_MAX(ret.x, faces[i].v[0].x);
-            SET_MAX(ret.y, faces[i].v[0].y);
-            SET_MAX(ret.z, faces[i].v[0].z);
-            SET_MAX(ret.x, faces[i].v[1].x);
-            SET_MAX(ret.y, faces[i].v[1].y);
-            SET_MAX(ret.z, faces[i].v[1].z);
-            SET_MAX(ret.x, faces[i].v[2].x);
-            SET_MAX(ret.y, faces[i].v[2].y);
-            SET_MAX(ret.z, faces[i].v[2].z);
+            for(int x=0; x<3; x++)
+            {
+                SET_MAX(ret.x, sf.v[x].x);
+                SET_MAX(ret.y, sf.v[x].y);
+                SET_MAX(ret.z, sf.v[x].z);
+            }
         }
         return ret;
     }
@@ -81,16 +74,16 @@ public:
 class SimpleModel
 {
 public:
-    vector<SimpleVolume> volumes;
+    std::vector<SimpleVolume> volumes;
 
     Point3 min()
     {
         if (volumes.size() < 1)
             return Point3(0, 0, 0);
         Point3 ret = volumes[0].min();
-        for(unsigned int i=0; i<volumes.size(); i++)
+        for(SimpleVolume& sv : volumes)
         {
-            Point3 v = volumes[i].min();
+            Point3 v = sv.min();
             SET_MIN(ret.x, v.x);
             SET_MIN(ret.y, v.y);
             SET_MIN(ret.z, v.z);
@@ -102,9 +95,9 @@ public:
         if (volumes.size() < 1)
             return Point3(0, 0, 0);
         Point3 ret = volumes[0].max();
-        for(unsigned int i=0; i<volumes.size(); i++)
+        for(SimpleVolume& sv : volumes)
         {
-            Point3 v = volumes[i].max();
+            Point3 v = sv.max();
             SET_MAX(ret.x, v.x);
             SET_MAX(ret.y, v.y);
             SET_MAX(ret.z, v.z);
