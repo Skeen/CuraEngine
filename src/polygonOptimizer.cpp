@@ -3,6 +3,8 @@
 
 #include <algorithm>
 
+#include "utils/remove_utils.h"
+
 void optimizePolygon(PolygonRef poly)
 {
     Point p0 = poly[poly.size()-1];
@@ -47,9 +49,6 @@ void optimizePolygons(Polygons& polys)
         optimizePolygon(r);
     }
     // Remove all the ones below 3 in size
-    polys.erase(std::remove_if(std::begin(polys), std::end(polys),
-            [](PolygonRef r)
-            {
-                return (r.size() < 3);
-            }), polys.end());
+    remove_if(polys, [](PolygonRef r)
+    { return (r.size() < 3); });
 }

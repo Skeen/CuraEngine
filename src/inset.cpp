@@ -4,6 +4,8 @@
 
 #include <algorithm>
 
+#include "utils/remove_utils.h"
+
 void generateInsets(SliceLayerPart* part, int offset, int insetCount)
 {
     part->combBoundery = part->outline.offset(-offset);
@@ -35,10 +37,7 @@ void generateInsets(SliceLayer* layer, int offset, int insetCount)
     
     //Remove the parts which did not generate an inset. As these parts are too small to print,
     // and later code can now assume that there is always minimal 1 inset line.
-    layer->parts.erase(std::remove_if(std::begin(layer->parts), std::end(layer->parts),
-                [](const SliceLayerPart& part)
-                {
-                return (part.insets.size() < 1);
-                }), layer->parts.end());
+    remove_if(layer->parts, [](const SliceLayerPart& part)
+    { return (part.insets.size() < 1); });
 }
 

@@ -1,6 +1,7 @@
 /** Copyright (C) 2013 David Braam - Released under terms of the AGPLv3 License */
 #include "bridge.h"
 #include "utils/polygondebug.h"
+#include "utils/remove_utils.h"
 
 #include <algorithm>
 
@@ -21,11 +22,8 @@ int bridgeAngle(SliceLayerPart* part, SliceLayer* prevLayer)
         return -1;
 
     //Skip internal holes
-    islands.erase(std::remove_if(std::begin(islands), std::end(islands),
-                [](PolygonRef r)
-                {
-                    return !r.orientation();
-                }), std::end(islands));
+    remove_if(islands, [](PolygonRef r)
+    { return !r.orientation(); });
 
     // We need at least 2 islands to be existant at this point
     if (islands.size() < 2)
