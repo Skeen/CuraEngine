@@ -83,10 +83,11 @@ void dumpLayerparts(SliceDataStorage& storage, const char* filename)
                     if (first)
                     {
                         fprintf(out, "\" style=\"fill:gray; stroke:black;stroke-width:1\" />\n");
-                        first++;
                     }
                     else
+                    {
                         fprintf(out, "\" style=\"fill:red; stroke:black;stroke-width:1\" />\n");
+                    }
                 }
             }
             fprintf(out, "</svg>\n");

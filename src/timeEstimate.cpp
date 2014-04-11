@@ -1,4 +1,4 @@
-#include <math.h>
+#include <cmath>
 #include <stdio.h>
 #include <string.h>
 #include <algorithm>
@@ -116,7 +116,7 @@ void TimeEstimateCalculator::plan(Position newPos, double feedrate)
     for(unsigned int n=0; n<NUM_AXIS; n++)
     {
         current_feedrate[n] = block.delta[n] * feedrate / block.distance;
-        current_abs_feedrate[n] = abs(current_feedrate[n]);
+        current_abs_feedrate[n] = std::abs(current_feedrate[n]);
         if (current_abs_feedrate[n] > max_feedrate[n])
             feedrate_factor = std::min(feedrate_factor, max_feedrate[n] / current_abs_feedrate[n]);
     }
