@@ -61,7 +61,7 @@ void GCodeExport::replaceTagInStart(const char* tag, const char* replaceValue)
     fseek(f, 0, SEEK_SET);
     fwrite(buffer, 1024, 1, f);
     
-    fsetpos(f, oldPos);
+    fsetpos(f, &oldPos);
 }
 
 void GCodeExport::setExtruderOffset(int id, Point p)
