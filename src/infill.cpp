@@ -2,6 +2,7 @@
 #include "infill.h"
 
 #include <algorithm>
+namespace cura {
 
 void generateConcentricInfill(Polygons outline, Polygons& result, int offsets[], int offsetsSize)
 {
@@ -81,3 +82,4 @@ void generateLineInfill(const Polygons& in_outline, Polygons& result, int extrus
     }
 }
 
+}//namespace cura

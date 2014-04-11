@@ -2,6 +2,7 @@
 #include "support.h"
 
 #include <algorithm>
+namespace cura {
 
 void generateSupportGrid(SupportStorage& storage, OptimizedModel* om, int supportAngle, bool supportEverywhere, int supportXYDistance, int supportZDistance)
 {
@@ -177,3 +178,4 @@ SupportPolyGenerator::SupportPolyGenerator(SupportStorage& storage, int32_t z)
     polygons = polygons.offset(storage.XYDistance);
 }
 
+}//namespace cura

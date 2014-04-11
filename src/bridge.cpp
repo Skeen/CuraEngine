@@ -4,31 +4,22 @@
 
 #include <algorithm>
 
-int bridgeAngle(SliceLayerPart* part, SliceLayer* prevLayer)
+namespace cura {
+
+int bridgeAngle(Polygons outline, SliceLayer* prevLayer)
 {
+    AABB boundaryBox(outline);
     //To detect if we have a bridge, first calculate the intersection of the current layer with the previous layer.
     // This gives us the islands that the layer rests on.
     Polygons islands;
-    for(SliceLayerPart& par : prevLayer->parts)
+    for(auto prevLayerPart : prevLayer->parts)
     {
-        if (!part->boundaryBox.hit(par.boundaryBox)) continue;
+        if (!boundaryBox.hit(prevLayerPart.boundaryBox))
+            continue;
         
-        islands.add(part->outline.intersection(par.outline));
+        islands.add(outline.intersection(prevLayerPart.outline));
     }
-
-    // TODO: Why is this check in place?
-    if (islands.size() > 5)
-        return -1;
-
-    //Skip internal holes
-    islands.erase(std::remove_if(std::begin(islands), std::end(islands),
-                [](PolygonRef r)
-                {
-                    return !r.orientation();
-                }), std::end(islands));
-
-    // We need at least 2 islands to be existant at this point
-    if (islands.size() < 2)
+    if (islands.size() > 5 || islands.size() < 1)
         return -1;
     
     // Lambda to compare area
@@ -47,8 +38,8 @@ int bridgeAngle(SliceLayerPart* part, SliceLayer* prevLayer)
 
     Point center1 = idx1.centerOfMass();
     Point center2 = idx2.centerOfMass();
-    
-    double angle = atan2(center2.X - center1.X, center2.Y - center1.Y) / M_PI * 180.0;
-    if (angle < 0) angle += 360;
-    return angle;
+
+    return angle(center2 - center1);
 }
+
+}//namespace cura

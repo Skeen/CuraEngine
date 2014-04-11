@@ -2,6 +2,7 @@
 #include "polygonOptimizer.h"
 
 #include <algorithm>
+namespace cura {
 
 void optimizePolygon(PolygonRef poly)
 {
@@ -53,3 +54,5 @@ void optimizePolygons(Polygons& polys)
                 return (r.size() < 3);
             }), polys.end());
 }
+
+}//namespace cura

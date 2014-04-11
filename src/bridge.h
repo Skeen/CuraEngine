@@ -4,6 +4,10 @@
 
 #include "sliceDataStorage.h"
 
-int bridgeAngle(SliceLayerPart* part, SliceLayer* prevLayer);
+namespace cura {
+
+int bridgeAngle(Polygons outline, SliceLayer* prevLayer);
+
+}//namespace cura
 
 #endif//BRIDGE_H

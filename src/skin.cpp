@@ -2,6 +2,7 @@
 #include "skin.h"
 
 #include <algorithm>
+namespace cura {
 
 void generateSkins(int layerNr, SliceVolumeStorage& storage, int extrusionWidth, int downSkinCount, int upSkinCount, int infillOverlap)
 {
@@ -108,3 +109,5 @@ void generateSparse(int layerNr, SliceVolumeStorage& storage, int extrusionWidth
         part.sparseOutline = sparse.difference(result);
     }
 }
+
+}//namespace cura

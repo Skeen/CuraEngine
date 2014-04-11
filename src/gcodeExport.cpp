@@ -7,6 +7,9 @@
 #include "settings.h"
 #include "utils/logoutput.h"
 
+
+namespace cura {
+
 GCodeExport::GCodeExport()
 : currentPosition(0,0,0)
 {
@@ -463,16 +466,18 @@ void GCodePlanner::addExtrusionMove(Point p, GCodePathConfig* config)
 
 void GCodePlanner::moveInsideCombBoundary(int distance)
 {
-    if (!comb || comb->checkInside(lastPosition)) return;
+    if (!comb || comb->inside(lastPosition))
+        return;
     Point p = lastPosition;
     if (comb->moveInside(&p, distance))
     {
-        //Move inside again, so we move out of tight 90deg corners
+        // Move inside again, so we move out of tight 90deg corners
         comb->moveInside(&p, distance);
-        if (comb->checkInside(p))
+        if (comb->inside(p))
         {
             addTravel(p);
-            //Make sure the that any retraction happens after this move, not before it by starting a new move path.
+            // Make sure the that any retraction happens after this move, not
+            // before it by starting a new move path.
             forceNewPathStart();
         }
     }
@@ -664,3 +669,5 @@ void GCodePlanner::writeGCode(bool liftHeadIfNeeded, int layerThickness)
         gcode.writeDelay(extraTime);
     }
 }
+
+}//namespace cura

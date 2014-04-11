@@ -3,6 +3,7 @@
 #include "polygonOptimizer.h"
 
 #include <algorithm>
+namespace cura {
 
 void generateInsets(SliceLayerPart* part, int offset, int insetCount)
 {
@@ -42,3 +43,4 @@ void generateInsets(SliceLayer* layer, int offset, int insetCount)
                 }), layer->parts.end());
 }
 
+}//namespace cura

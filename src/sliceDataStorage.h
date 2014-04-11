@@ -14,6 +14,7 @@ SliceData
       + Polygons[]
     + SkinPolygons[]
 */
+namespace cura {
 
 class SliceLayerPart
 {
@@ -24,7 +25,6 @@ public:
     vector<Polygons> insets;
     Polygons skinOutline;
     Polygons sparseOutline;
-    int bridgeAngle;
 };
 
 class SliceLayer
@@ -81,5 +81,7 @@ public:
     Polygons wipeTower;
     Point wipePoint;
 };
+
+}//namespace cura
 
 #endif//SLICE_DATA_STORAGE_H
