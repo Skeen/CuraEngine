@@ -1,6 +1,8 @@
 /** Copyright (C) 2013 David Braam - Released under terms of the AGPLv3 License */
 #include "polygonOptimizer.h"
 
+#include "utils/remove_utils.h"
+
 #include <algorithm>
 namespace cura {
 
@@ -48,11 +50,10 @@ void optimizePolygons(Polygons& polys)
         optimizePolygon(r);
     }
     // Remove all the ones below 3 in size
-    polys.erase(std::remove_if(std::begin(polys), std::end(polys),
-            [](PolygonRef r)
+    remove_if(polys, [](PolygonRef r)
             {
                 return (r.size() < 3);
-            }), polys.end());
+            });
 }
 
 }//namespace cura

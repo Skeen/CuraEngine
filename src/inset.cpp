@@ -2,6 +2,8 @@
 #include "inset.h"
 #include "polygonOptimizer.h"
 
+#include "utils/remove_utils.h"
+
 #include <algorithm>
 namespace cura {
 
@@ -36,11 +38,10 @@ void generateInsets(SliceLayer* layer, int offset, int insetCount)
     
     //Remove the parts which did not generate an inset. As these parts are too small to print,
     // and later code can now assume that there is always minimal 1 inset line.
-    layer->parts.erase(std::remove_if(std::begin(layer->parts), std::end(layer->parts),
-                [](const SliceLayerPart& part)
+    remove_if(layer->parts, [](const SliceLayerPart& part)
                 {
                 return (part.insets.size() < 1);
-                }), layer->parts.end());
+                });
 }
 
 }//namespace cura
