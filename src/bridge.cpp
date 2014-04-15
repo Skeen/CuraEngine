@@ -6,6 +6,11 @@
 
 namespace cura {
 
+double area_cmp(PolygonRef r1, PolygonRef r2)
+{
+    return fabs(r1.area()) > fabs(r2.area());
+}
+
 int bridgeAngle(Polygons outline, SliceLayer* prevLayer)
 {
     AABB boundaryBox(outline);
@@ -23,8 +28,8 @@ int bridgeAngle(Polygons outline, SliceLayer* prevLayer)
         return -1;
     
     // Lambda to compare area
-    const auto area_cmp = [](PolygonRef r1, PolygonRef r2)
-    { return fabs(r1.area()) > fabs(r2.area()); };
+    // const auto area_cmp = [](PolygonRef r1, PolygonRef r2)
+    // { return fabs(r1.area()) > fabs(r2.area()); };
 
     // Next find the 2 largest islands that we rest on.
     // Find the first one

@@ -4,6 +4,11 @@
 #include <algorithm>
 namespace cura {
 
+int support_point_cmp(const SupportPoint& a, const SupportPoint& b)
+{
+    return a.z - b.z; 
+}
+
 void generateSupportGrid(SupportStorage& storage, OptimizedModel* om, int supportAngle, bool supportEverywhere, int supportXYDistance, int supportZDistance)
 {
     storage.generated = false;
@@ -76,8 +81,7 @@ void generateSupportGrid(SupportStorage& storage, OptimizedModel* om, int suppor
         {
             unsigned int n = x+y*storage.gridWidth;
             std::sort(std::begin(storage.grid[n]), std::end(storage.grid[n]),
-                      [](const SupportPoint& a, const SupportPoint& b)
-                        { return a.z - b.z; });
+                      support_point_cmp);
         }
     }
     storage.gridOffset.X += storage.gridScale / 2;

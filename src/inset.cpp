@@ -29,6 +29,11 @@ void generateInsets(SliceLayerPart* part, int offset, int insetCount)
     }
 }
 
+bool remove_part(const SliceLayerPart& part)
+{
+    return (part.insets.size() < 1);
+}
+
 void generateInsets(SliceLayer* layer, int offset, int insetCount)
 {
     for(SliceLayerPart& part : layer->parts)
@@ -38,10 +43,7 @@ void generateInsets(SliceLayer* layer, int offset, int insetCount)
     
     //Remove the parts which did not generate an inset. As these parts are too small to print,
     // and later code can now assume that there is always minimal 1 inset line.
-    remove_if(layer->parts, [](const SliceLayerPart& part)
-                {
-                return (part.insets.size() < 1);
-                });
+    remove_if(layer->parts, remove_part);
 }
 
 }//namespace cura
