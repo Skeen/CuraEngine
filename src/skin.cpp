@@ -22,7 +22,7 @@ struct removePolygon
     }
 };
 
-void generateSkins(int layerNr, SliceVolumeStorage& storage, int extrusionWidth, int downSkinCount, int upSkinCount, int infillOverlap)
+void generateSkins(int layerNr, SliceVolumeStorage& storage, int extrusionWidth, int downSkinCount, int upSkinCount, int up5050SkinCount, int infillOverlap)
 {
     SliceLayer* layer = &storage.layers[layerNr];
 
@@ -47,9 +47,9 @@ void generateSkins(int layerNr, SliceVolumeStorage& storage, int extrusionWidth,
                     downskin = downskin.difference(comp.insets[comp.insets.size() - 1]);
             }
         }
-        if (static_cast<int>(layerNr + upSkinCount) < static_cast<int>(storage.layers.size()))
+        if (static_cast<int>(layerNr + upSkinCount + up5050SkinCount) < static_cast<int>(storage.layers.size()))
         {
-            SliceLayer* layer2 = &storage.layers[layerNr + upSkinCount];
+            SliceLayer* layer2 = &storage.layers[layerNr + upSkinCount + up5050SkinCount];
             for(SliceLayerPart& comp : layer2->parts)
             {
                 if (part.boundaryBox.hit(comp.boundaryBox))
@@ -64,7 +64,7 @@ void generateSkins(int layerNr, SliceVolumeStorage& storage, int extrusionWidth,
     }
 }
 
-void generateSparse(int layerNr, SliceVolumeStorage& storage, int extrusionWidth, int downSkinCount, int upSkinCount)
+void generateSparse(int layerNr, SliceVolumeStorage& storage, int extrusionWidth, int downSkinCount, int upSkinCount, int up5050SkinCount)
 {
     SliceLayer* layer = &storage.layers[layerNr];
 
@@ -90,9 +90,9 @@ void generateSparse(int layerNr, SliceVolumeStorage& storage, int extrusionWidth
                 }
             }
         }
-        if (static_cast<int>(layerNr + upSkinCount) < static_cast<int>(storage.layers.size()))
+        if (static_cast<int>(layerNr + upSkinCount + up5050SkinCount) < static_cast<int>(storage.layers.size()))
         {
-            SliceLayer* layer2 = &storage.layers[layerNr + upSkinCount];
+            SliceLayer* layer2 = &storage.layers[layerNr + upSkinCount + up5050SkinCount];
             for(SliceLayerPart& comp : layer2->parts)
             {
                 if (part.boundaryBox.hit(comp.boundaryBox))

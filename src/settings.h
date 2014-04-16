@@ -98,6 +98,7 @@ public:
     int insetCount;
     int downSkinCount;
     int upSkinCount;
+    int up5050SkinCount;
     int sparseInfillLineDistance;
     int infillOverlap;
     int skirtDistance;

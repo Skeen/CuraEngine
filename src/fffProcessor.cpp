@@ -355,9 +355,9 @@ void fffProcessor::processSliceData(SliceDataStorage& storage)
                                          : config.extrusionWidth;
 
                 generateSkins(layerNr, svs, extrusionWidth,
-                              config.downSkinCount, config.upSkinCount, config.infillOverlap);
+                              config.downSkinCount, config.upSkinCount, config.up5050SkinCount, config.infillOverlap);
                 generateSparse(layerNr, svs, extrusionWidth,
-                               config.downSkinCount, config.upSkinCount);
+                               config.downSkinCount, config.upSkinCount, config.up5050SkinCount);
 
                 SliceLayer* layer = &svs.layers[layerNr];
                 for (SliceLayerPart& slp : layer->parts)
@@ -724,16 +724,60 @@ void fffProcessor::addVolumeLayerToGCode(SliceDataStorage& storage,
 
         for (Polygons outline : part->skinOutline.splitIntoParts())
         {
+            auto& layers = storage.volumes[volumeIdx].layers;
             int bridge = -1;
             if (layerNr > 0)
             {
                 bridge = bridgeAngle(
-                    outline, &storage.volumes[volumeIdx].layers[layerNr - 1]);
+                    outline, &layers[layerNr - 1]);
             }
 
-            generateLineInfill(outline, fillPolygons, extrusionWidth,
-                               extrusionWidth, config.infillOverlap,
-                               (bridge > -1) ? bridge : fillAngle);
+            // Do bottom layers
+            if(layerNr < config.downSkinCount)
+            {
+                generateLineInfill(outline, fillPolygons, extrusionWidth,
+                                   extrusionWidth, config.infillOverlap,
+                                   (bridge > -1) ? bridge : fillAngle);
+            }
+            else // Handle top layers
+            {
+                // Check for how many layers up, we hit something;
+                // Start searching one layer above us.
+                int layer_up = 1;
+                // We'll keep going, while we're hitting layers,
+                // incrementing the number of layers we've hit, at each iteration
+                for(bool any_part_hit=true; any_part_hit; layer_up++)
+                {
+                    // Check that we're not trying to access out of bounds
+                    if (static_cast<int>(layerNr + layer_up) >= static_cast<int>(layers.size()))
+                    {
+                        break;
+                    }
+                    // Get a reference to the parts at this layer
+                    const auto& parts = layers[layerNr + layer_up].parts;
+                    // Check if we hit any of these parts
+                    any_part_hit = std::any_of(begin(parts), end(parts),
+                            [part](const SliceLayerPart& comp)
+                    {
+                        return (part->boundaryBox.hit(comp.boundaryBox));
+                    });
+                }
+                
+                // Generate kisslicer style 50/50 for up5050SkinCount layers
+                if (layer_up > config.upSkinCount)
+                {
+                    generateLineInfill(outline, fillPolygons, extrusionWidth,
+                                       config.sparseInfillLineDistance,
+                                       config.infillOverlap,
+                                       fillAngle);
+                }
+                else // Generate ordinary top for upSkinCount layers
+                {
+                    generateLineInfill(outline, fillPolygons, extrusionWidth,
+                                       extrusionWidth, config.infillOverlap,
+                                       (bridge > -1) ? bridge : fillAngle);
+                }
+            }
         }
 
         if (config.sparseInfillLineDistance > 0)

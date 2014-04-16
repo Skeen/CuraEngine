@@ -24,6 +24,7 @@ ConfigSettings::ConfigSettings()
     SETTING(insetCount, 2);
     SETTING(downSkinCount, 6);
     SETTING(upSkinCount, 6);
+    SETTING(up5050SkinCount, 2);
     SETTING(sparseInfillLineDistance, 100 * extrusionWidth / 20);
     SETTING(infillOverlap, 15);
     SETTING(skirtDistance, 6000);
