@@ -12,11 +12,6 @@ double area_cmp(PolygonRef r1, PolygonRef r2)
     return fabs(r1.area()) > fabs(r2.area());
 }
 
-bool remove_orientation(PolygonRef r)
-{
-    return  !r.orientation();
-}
-
 int bridgeAngle(Polygons outline, SliceLayer* prevLayer)
 {
     AABB boundaryBox(outline);
