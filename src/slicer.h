@@ -10,6 +10,8 @@
     The Slicer creates layers of polygons from an optimized 3D model.
     The result of the Slicer is a list of polygons without any order or structure.
 */
+namespace cura {
+
 struct SlicerSegment
 {
     Point start, end;
@@ -157,5 +159,7 @@ public:
     
     void dumpSegmentsToHTML(const char* filename);
 };
+
+}//namespace cura
 
 #endif//SLICER_H

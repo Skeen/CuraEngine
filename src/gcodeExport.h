@@ -10,6 +10,8 @@
 #include "utils/polygon.h"
 #include "timeEstimate.h"
 
+namespace cura {
+
 //The GCodeExport class writes the actual GCode. This is the only class that knows how GCode looks and feels.
 //  Any customizations on GCodes flavors are done in this class.
 class GCodeExport
@@ -220,5 +222,7 @@ public:
     
     void writeGCode(bool liftHeadIfNeeded, int layerThickness);
 };
+
+}//namespace cura
 
 #endif//GCODEEXPORT_H

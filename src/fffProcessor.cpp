@@ -17,6 +17,8 @@
 
 #include "range_inset.hpp"
 
+namespace cura {
+
 fffProcessor::fffProcessor(ConfigSettings& config) : config(config)
 {
 }
@@ -388,25 +390,6 @@ void fffProcessor::processSliceData(SliceDataStorage& storage)
     generateRaft(storage, config.raftMargin);
 
     sendPolygonsToGui("skirt", 0, config.initialLayerThickness, storage.skirt);
-
-    for (SliceVolumeStorage& svs : storage.volumes)
-    {
-        for (unsigned int layerNr = 0; layerNr < totalLayers; layerNr++)
-        {
-            for (SliceLayerPart& slp : svs.layers[layerNr].parts)
-            {
-                if (layerNr > 0)
-                {
-                    slp.bridgeAngle =
-                        bridgeAngle(&slp, &svs.layers[layerNr - 1]);
-                }
-                else
-                {
-                    slp.bridgeAngle = -1;
-                }
-            }
-        }
-    }
 }
 
 void fffProcessor::writeGCode(SliceDataStorage& storage)
@@ -737,10 +720,20 @@ void fffProcessor::addVolumeLayerToGCode(SliceDataStorage& storage,
         int extrusionWidth = (layerNr == 0) ? config.layer0extrusionWidth
                                             : config.extrusionWidth;
 
-        generateLineInfill(part->skinOutline, fillPolygons, extrusionWidth,
-                           extrusionWidth, config.infillOverlap,
-                           (part->bridgeAngle > -1) ? part->bridgeAngle
-                                                    : fillAngle);
+        for (Polygons outline : part->skinOutline.splitIntoParts())
+        {
+            int bridge = -1;
+            if (layerNr > 0)
+            {
+                bridge = bridgeAngle(
+                    outline, &storage.volumes[volumeIdx].layers[layerNr - 1]);
+            }
+
+            generateLineInfill(outline, fillPolygons, extrusionWidth,
+                               extrusionWidth, config.infillOverlap,
+                               (bridge > -1) ? bridge : fillAngle);
+        }
+
         if (config.sparseInfillLineDistance > 0)
         {
             switch(config.infillPattern)
@@ -898,3 +891,6 @@ void fffProcessor::addWipeTower(SliceDataStorage& storage, GCodePlanner& gcodeLa
                          config.extruderOffset[prevExtruder].p() +
                          config.extruderOffset[gcodeLayer.getExtruder()].p());
 }
+
+}//namespace cura
+

@@ -1,7 +1,8 @@
 /** Copyright (C) 2013 David Braam - Released under terms of the AGPLv3 License */
 #include "comb.h"
-
 #include "range_inset.hpp"
+
+namespace cura {
 
 bool Comb::preTest(Point startPoint, Point endPoint)
 {
@@ -20,19 +21,19 @@ bool Comb::collisionTest(Point startPoint, Point endPoint)
     {
         if (r.size() < 1)
             continue;
-        Point p0 = matrix.apply(r[r.size()-1]);
-        for(Point& p : r)
-        {
-            Point p1 = matrix.apply(p);
-            if ((p0.Y > sp.Y && p1.Y < sp.Y) || (p1.Y > sp.Y && p0.Y < sp.Y))
-            {
-                int64_t x = p0.X + (p1.X - p0.X) * (sp.Y - p0.Y) / (p1.Y - p0.Y);
-                
-                if (x > sp.X && x < ep.X)
-                    return true;
-            }
-            p0 = p1;
-        }
+                Point p0 = matrix.apply(r[r.size()-1]);
+                for(Point& p : r)
+                {
+                    Point p1 = matrix.apply(p);
+                        if ((p0.Y > sp.Y && p1.Y < sp.Y) || (p1.Y > sp.Y && p0.Y < sp.Y))
+                        {
+                            int64_t x = p0.X + (p1.X - p0.X) * (sp.Y - p0.Y) / (p1.Y - p0.Y);
+                                
+                                if (x > sp.X && x < ep.X)
+                                    return true;
+                        }
+                    p0 = p1;
+                }
     }
     return false;
 }
@@ -110,32 +111,6 @@ Comb::~Comb()
     delete[] maxIdx;
 }
 
-bool Comb::checkInside(Point p)
-{
-    //Check if we are inside the comb boundary. We do this by tracing from the point towards the negative X direction,
-    //  every boundary we cross increments the crossings counter. If we have an even number of crossings then we are not inside the boundary
-    int crossings = 0;
-    for(PolygonRef r : boundery)
-    {
-        if (r.size() < 1)
-            continue;
-        Point p0 = r[r.size()-1];
-        for(Point& p1 : r)
-        {
-            if ((p0.Y >= p.Y && p1.Y < p.Y) || (p1.Y > p.Y && p0.Y <= p.Y))
-            {
-                int64_t x = p0.X + (p1.X - p0.X) * (p.Y - p0.Y) / (p1.Y - p0.Y);
-                if (x >= p.X)
-                    crossings++;
-            }
-            p0 = p1;
-        }
-    }
-    if ((crossings % 2) == 0)
-        return false;
-    return true;
-}
-
 bool Comb::moveInside(Point* p, int distance)
 {
     Point ret = *p;
@@ -182,13 +157,13 @@ bool Comb::calc(Point startPoint, Point endPoint, vector<Point>& combPoints)
     
     bool addEndpoint = false;
     //Check if we are inside the comb boundaries
-    if (!checkInside(startPoint))
+    if (!boundery.inside(startPoint))
     {
         if (!moveInside(&startPoint))    //If we fail to move the point inside the comb boundary we need to retract.
             return false;
         combPoints.push_back(startPoint);
     }
-    if (!checkInside(endPoint))
+    if (!boundery.inside(endPoint))
     {
         if (!moveInside(&endPoint))    //If we fail to move the point inside the comb boundary we need to retract.
             return false;
@@ -262,3 +237,5 @@ bool Comb::calc(Point startPoint, Point endPoint, vector<Point>& combPoints)
         combPoints.push_back(endPoint);
     return true;
 }
+
+}//namespace cura

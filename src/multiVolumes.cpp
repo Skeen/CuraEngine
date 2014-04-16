@@ -1,5 +1,7 @@
 #include "multiVolumes.h"
 
+namespace cura {
+    
 /* This file contains code to help fixing up and changing layers that are build from multiple volumes. */
 
 void carveMultipleVolumes(std::vector<SliceVolumeStorage> &volumes)
@@ -55,3 +57,4 @@ void generateMultipleVolumesOverlap(std::vector<SliceVolumeStorage> &volumes, in
     }
 }
 
+}//namespace cura

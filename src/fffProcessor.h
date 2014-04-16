@@ -12,6 +12,8 @@
 #define GUI_CMD_SEND_POLYGONS 0x02
 #define GUI_CMD_FINISH_OBJECT 0x03
 
+namespace cura {
+
 //FusedFilamentFabrication processor.
 class fffProcessor
 {
@@ -50,12 +52,13 @@ private:
     
     void writeGCode(SliceDataStorage& storage);
 
-    //Add a single layer from a single mesh-volume to the GCode
     void addVolumeLayerToGCode(SliceDataStorage& storage, GCodePlanner& gcodeLayer, int volumeIdx, int layerNr);
 
     void addSupportToGCode(SliceDataStorage& storage, GCodePlanner& gcodeLayer, int layerNr);
 
     void addWipeTower(SliceDataStorage& storage, GCodePlanner& gcodeLayer, int layerNr, int prevExtruder);
 };
+
+}//namespace cura
 
 #endif//FFF_PROCESSOR_H

@@ -1,8 +1,27 @@
 /** Copyright (C) 2013 David Braam - Released under terms of the AGPLv3 License */
 #include "skin.h"
 
-#include <algorithm>
 #include "utils/remove_utils.h"
+
+#include <algorithm>
+
+namespace cura {
+
+struct removePolygon
+{
+    removePolygon(double minAreaSize)
+        : minAreaSize(minAreaSize)
+    {
+    }
+    double minAreaSize;
+
+    bool operator()(PolygonRef r)
+    {
+        // Only create an up/down skin if the area is large enough. So you do not create tiny blobs of "trying to fill"
+                    double area = INT2MM(INT2MM(fabs(r.area())));
+                    return (area < minAreaSize);
+    }
+};
 
 void generateSkins(int layerNr, SliceVolumeStorage& storage, int extrusionWidth, int downSkinCount, int upSkinCount, int infillOverlap)
 {
@@ -42,13 +61,7 @@ void generateSkins(int layerNr, SliceVolumeStorage& storage, int extrusionWidth,
         part.skinOutline = upskin.unionPolygons(downskin);
 
         double minAreaSize = (2 * M_PI * INT2MM(extrusionWidth) * INT2MM(extrusionWidth)) * 0.3;
-        remove_if(part.skinOutline, [minAreaSize](PolygonRef r)
-        {
-            // Only create an up/down skin if the area is large enough. So you
-            // do not create tiny blobs of "trying to fill"
-            double area = INT2MM(INT2MM(fabs(r.area())));
-            return (area < minAreaSize);
-        });
+        remove_if(part.skinOutline, removePolygon(minAreaSize));
     }
 }
 
@@ -98,14 +111,9 @@ void generateSparse(int layerNr, SliceVolumeStorage& storage, int extrusionWidth
         Polygons result = upskin.unionPolygons(downskin);
 
         double minAreaSize = 3.0;//(2 * M_PI * INT2MM(config.extrusionWidth) * INT2MM(config.extrusionWidth)) * 3;
-        remove_if(result, [minAreaSize](PolygonRef r)
-        {
-            // Only create an up/down skin if the area is large enough. So you
-            // do not create tiny blobs of "trying to fill"
-            double area = INT2MM(INT2MM(fabs(r.area())));
-            return (area < minAreaSize);
-        });
-
+        remove_if(result, removePolygon(minAreaSize));
         part.sparseOutline = sparse.difference(result);
     }
 }
+
+}//namespace cura

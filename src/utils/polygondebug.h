@@ -4,6 +4,8 @@
 #include <stdio.h>
 #include "polygon.h"
 
+namespace cura {
+
 class PolygonDebug
 {
 private:
@@ -75,5 +77,5 @@ public:
         fclose(f);
     }
 };
-
+}//namespace cura
 #endif//POLYGON_DEBUG_H
